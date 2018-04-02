@@ -26,7 +26,7 @@ namespace RapidSettings.Providers
         /// </summary>
         /// <param name="key">Key by which raw setting value should be retrieved.</param>
         /// <returns>Task which retrieves raw setting value.</returns>
-        public Task<object> GetRawSettingAsync(object key)
+        public Task<object> GetRawSettingAsync(string key)
         {
             return this.rawSettingResolvingTask.Invoke(key);
         }

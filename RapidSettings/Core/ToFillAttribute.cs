@@ -18,10 +18,15 @@ namespace RapidSettings.Core
         /// <param name="isRequired">Indicates if decorated member is required. True by default.</param>
         /// <param name="rawSettingsProviderName">Provider that will receive <paramref name="key"/> to provide raw value of decorated setting that will be later converted to proper type.
         /// Leaving null there causes used <see cref="ISettingsFiller"/> to use its default provider.</param>
-        public ToFillAttribute([CallerMemberName] object key = null, bool isRequired = true, string rawSettingsProviderName = null)
+        public ToFillAttribute([CallerMemberName] string key = null, bool isRequired = true, string rawSettingsProviderName = null)
         {
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new RapidSettingsException($"{nameof(key)} cannot be null or empty!");
+            }
+
             this.IsRequired = isRequired;
-            this.Key = key ?? throw new RapidSettingsException($"{nameof(key)} cannot be null!");
+            this.Key = key;
             this.RawSettingsProviderName = rawSettingsProviderName;
         }
 
@@ -36,7 +41,7 @@ namespace RapidSettings.Core
         /// <summary>
         /// Key that will be used to retrieve raw setting value.
         /// </summary>
-        public object Key { get; }
+        public string Key { get; }
 
         /// <summary>
         /// Name of provider that will receive <see cref="Key"/> to provide raw value of decorated setting that will be later converted to proper type.

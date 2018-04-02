@@ -224,7 +224,7 @@ namespace RapidSettings.Core
             }
         }
 
-        private object GetRawSetting(IRawSettingsProvider rawSettingsProvider, object settingKey)
+        private object GetRawSetting(IRawSettingsProvider rawSettingsProvider, string settingKey)
         {
             switch (rawSettingsProvider)
             {
@@ -239,7 +239,7 @@ namespace RapidSettings.Core
             }
         }
 
-        private async Task<object> GetRawSettingAsync(IRawSettingsProvider rawSettingsProvider, object settingKey)
+        private async Task<object> GetRawSettingAsync(IRawSettingsProvider rawSettingsProvider, string settingKey)
         {
             switch (rawSettingsProvider)
             {

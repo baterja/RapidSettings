@@ -13,7 +13,7 @@ namespace RapidSettings.Providers
         /// Gets raw setting value from app.config/web.config by given string <paramref name="key"/>.
         /// </summary>
         /// <param name="key">String by which raw setting value should be retrieved from app.config/web.config</param>
-        public object GetRawSetting(object key)
+        public object GetRawSetting(string key)
         {
             if (key == null)
             {

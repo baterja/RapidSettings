@@ -11,6 +11,6 @@ namespace RapidSettings.Interfaces
         /// Gets raw value of setting asynchronously.
         /// </summary>
         /// <param name="key">Key by which setting should be retrieved.</param>
-        Task<object> GetRawSettingAsync(object key);
+        Task<object> GetRawSettingAsync(string key);
     }
 }

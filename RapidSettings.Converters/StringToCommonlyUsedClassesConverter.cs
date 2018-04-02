@@ -30,7 +30,7 @@ namespace RapidSettings.Converters
         }
 
         /// <summary>
-        /// Convertes mail address as string to <see cref="MailAddress"/>. 
+        /// Converts mail address as string to <see cref="MailAddress"/>. 
         /// </summary>
         /// <param name="mailAddress"><see cref="MailAddress"/> as string in form like 'My Display Name#myemail@mail.com'. Display name (all before "#" and "#" itself) is optional.</param>
         /// <returns><paramref name="mailAddress"/> converted to <see cref="MailAddress"/>.</returns>

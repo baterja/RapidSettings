@@ -12,7 +12,7 @@ namespace RapidSettings.Core
         /// <param name="isRequired">Indicates if successful retrieval and conversion was required.</param>
         /// <param name="hasValueSpecified">Indicates if value of setting was successfully retrieved and converted
         /// or if a default value was assigned for non-required setting which value couldn't be retrieved/converted.</param>
-        public SettingMetadata(object key, bool isRequired, bool hasValueSpecified)
+        public SettingMetadata(string key, bool isRequired, bool hasValueSpecified)
         {
             this.Key = key ?? throw new RapidSettingsException($"{nameof(key)} cannot be null!");
             this.IsRequired = isRequired;
@@ -33,6 +33,6 @@ namespace RapidSettings.Core
         /// <summary>
         /// Key which was used to retrieve this setting.
         /// </summary>
-        public object Key { get; }
+        public string Key { get; }
     }
 }

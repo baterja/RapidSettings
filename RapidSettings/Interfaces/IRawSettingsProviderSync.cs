@@ -9,6 +9,6 @@
         /// Gets raw value of setting.
         /// </summary>
         /// <param name="key">Key by which setting should be retrieved.</param>
-        object GetRawSetting(object key);
+        object GetRawSetting(string key);
     }
 }

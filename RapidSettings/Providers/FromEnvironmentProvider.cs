@@ -13,7 +13,7 @@ namespace RapidSettings.Providers
         /// Gets raw setting value from environment variable named as <paramref name="key"/>.
         /// </summary>
         /// <param name="key">String name of environment variable.</param>
-        public object GetRawSetting(object key)
+        public object GetRawSetting(string key)
         {
             if (key == null)
             {

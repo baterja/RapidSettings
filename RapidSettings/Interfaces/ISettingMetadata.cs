@@ -19,6 +19,6 @@
         /// <summary>
         /// Key which was used to retrieve this setting.
         /// </summary>
-        object Key { get; }
+        string Key { get; }
     }
 }

@@ -5,6 +5,17 @@
     <NeutralLanguage>en</NeutralLanguage>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\RapidSettings.xml</DocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AssemblyVersion>0.0.0.0</AssemblyVersion>
+    <Version>0.0.0</Version>
+    <FileVersion>0.0.0.0</FileVersion>
+    <PackageProjectUrl>https://github.com/baterja/RapidSettings</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/baterja/RapidSettings</RepositoryUrl>
+    <Authors>mtomcz</Authors>
+    <Company />
+    <PackageTags>app.config;web.config;appsettings;settings;configuration;env;ConfigurationManager</PackageTags>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseUrl>http://www.wtfpl.net/</PackageLicenseUrl>
+    <Description>Simple and extensible way to make web.config/app.config/env vars/whatever easier to read and strongly typed!</Description>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">

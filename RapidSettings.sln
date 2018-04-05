@@ -9,6 +9,11 @@ Project("{BFCDA765-E73D-4AF0-B3BC-309E7BC844F6}") = "RapidSettings.Tests", "Rapi
 EndProject
 Project("{ECE35341-CF1D-4BC1-84DA-452E03B83845}") = "RapidSettings.Converters", "RapidSettings.Converters\RapidSettings.Converters.csproj", "{3A3B56F6-8555-4EA2-B78D-EE14D377F633}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{41A849FD-5B27-4B1E-BDF8-FA2C9525A09F}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

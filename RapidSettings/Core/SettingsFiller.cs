@@ -106,6 +106,9 @@ namespace RapidSettings.Core
             #endregion
 
             #region Conversion
+
+            // TODO make conversion optional (basing on some setting) when rawSetting's type is assignable to typeOfMemberToSet
+
             var convertMethod = typeof(ISettingsConverterChooser).GetMethod(nameof(ISettingsConverterChooser.ChooseAndConvert));
             var convertGenericMethod = convertMethod.MakeGenericMethod(rawSetting.GetType(), typeOfMemberToSet);
 
@@ -161,6 +164,9 @@ namespace RapidSettings.Core
             #endregion
 
             #region Conversion
+
+            // TODO make conversion optional (basing on some setting) when rawSetting's type is assignable to typeOfMemberToSet
+
             var convertMethod = typeof(ISettingsConverterChooser).GetMethod(nameof(ISettingsConverterChooser.ChooseAndConvert));
             var convertGenericMethod = convertMethod.MakeGenericMethod(rawSetting.GetType(), typeOfMemberToSet);
 

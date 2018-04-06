@@ -10,3 +10,5 @@ And after that maybe...:
 - [ ] Create separate packages with more advanced Converters and Providers,
 - [ ] Make more specific exceptions (if someone expresses such a need),
 - [ ] Add another interface for Providers which will enable retrieving multiple raw values at once,
+- [ ] Make conversion optional when type of setting retrieved by Provider is assignable to type of target property (+ setting to turn it on/off),
+- [ ] Make retrieving raw setting values with Providers run in parallel if there are multiple Providers and they are async (+ setting to turn it on/off),

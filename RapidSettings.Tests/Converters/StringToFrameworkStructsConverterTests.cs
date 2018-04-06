@@ -13,44 +13,6 @@ namespace RapidSettings.Tests.Converters
     {
         private class NumericFrameworkStructsSettings
         {
-            #region Fields
-#pragma warning disable 649 // value never assigned ...
-            [ToFill(nameof(int1))]
-            public int int1;
-
-            [ToFill(nameof(byte1))]
-            public byte byte1;
-
-            [ToFill(nameof(sbyte1))]
-            public sbyte sbyte1;
-
-            [ToFill(nameof(char1))]
-            public char char1;
-
-            [ToFill(nameof(decimal1))]
-            public decimal decimal1;
-
-            [ToFill(nameof(double1))]
-            public double double1;
-
-            [ToFill(nameof(float1))]
-            public float float1;
-
-            [ToFill(nameof(uint1))]
-            public uint uint1;
-
-            [ToFill(nameof(ulong1))]
-            public ulong ulong1;
-
-            [ToFill(nameof(short1))]
-            public short short1;
-
-            [ToFill(nameof(ushort1))]
-            public ushort ushort1;
-#pragma warning restore 649
-            #endregion
-
-            #region Properties
             [ToFill]
             public int Int1 { get; private set; }
 
@@ -83,7 +45,6 @@ namespace RapidSettings.Tests.Converters
 
             [ToFill]
             public ushort Ushort1 { get; private set; }
-            #endregion
         }
 
         [TestMethod]
@@ -92,20 +53,6 @@ namespace RapidSettings.Tests.Converters
             var settingsFiller = this.GetSettingsFiller();
 
             var settings = settingsFiller.CreateWithSettings<NumericFrameworkStructsSettings>();
-
-            #region Fields
-            Assert.AreEqual(1, settings.byte1);
-            Assert.AreEqual('1', settings.char1);
-            Assert.AreEqual(1, settings.decimal1);
-            Assert.AreEqual(1, settings.double1);
-            Assert.AreEqual(1, settings.float1);
-            Assert.AreEqual(1, settings.int1);
-            Assert.AreEqual(1, settings.sbyte1);
-            Assert.AreEqual(1, settings.short1);
-            Assert.AreEqual((uint)1, settings.uint1);
-            Assert.AreEqual((ulong)1, settings.ulong1);
-            Assert.AreEqual((ushort)1, settings.ushort1);
-            #endregion
 
             #region Properties
             Assert.AreEqual(1, settings.Byte1);
@@ -141,13 +88,19 @@ namespace RapidSettings.Tests.Converters
         private class NonNumericFrameworkStructsSettings
         {
             [ToFill]
-            public bool SomeBool { get; private set; }
+            public bool SomeBoolean { get; private set; }
 
             [ToFill]
             public Guid SomeGuid { get; private set; }
 
             [ToFill]
             public string SomeString { get; private set; }
+
+            [ToFill]
+            public DateTime SomeDateTime { get; private set; }
+
+            [ToFill]
+            public DateTimeOffset SomeDateTimeOffset { get; private set; }
         }
 
         [TestMethod]
@@ -155,19 +108,33 @@ namespace RapidSettings.Tests.Converters
         {
             var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkStructsConverter() });
             var rawSettingsProvider = new FromFuncProvider(key =>
-                key.ToString() == nameof(NonNumericFrameworkStructsSettings.SomeGuid)
-                ? Guid.NewGuid().ToString()
-                : key.ToString() == nameof(NonNumericFrameworkStructsSettings.SomeBool)
-                    ? bool.TrueString
-                    : "asdf"
-            );
+            {
+                switch (key)
+                {
+                    case string x when x.EndsWith(typeof(Guid).Name, StringComparison.InvariantCultureIgnoreCase):
+                        return Guid.NewGuid().ToString();
+                    case string x when x.EndsWith(typeof(bool).Name, StringComparison.InvariantCultureIgnoreCase):
+                        return bool.TrueString;
+                    case string x when x.EndsWith(typeof(string).Name, StringComparison.InvariantCultureIgnoreCase):
+                        return "asdf";
+                    case string x when x.EndsWith(typeof(DateTime).Name, StringComparison.InvariantCultureIgnoreCase):
+                        return "2000-01-01";
+                    case string x when x.EndsWith(typeof(DateTimeOffset).Name, StringComparison.InvariantCultureIgnoreCase):
+                        return "2000-01-01";
+                    default:
+                        throw new ArgumentOutOfRangeException($"{nameof(key)} with value {key} is out of range of handled keys!");
+                }
+            });
+
             var settingsFiller = new SettingsFiller(converterChooser, rawSettingsProvider);
 
             var settings = settingsFiller.CreateWithSettings<NonNumericFrameworkStructsSettings>();
 
-            Assert.AreEqual(true, settings.SomeBool);
+            Assert.AreEqual(true, settings.SomeBoolean);
             Assert.IsTrue(default(Guid) != settings.SomeGuid);
             Assert.AreEqual("asdf", settings.SomeString);
+            Assert.AreEqual(DateTime.Parse("2000-01-01"), settings.SomeDateTime);
+            Assert.AreEqual(DateTimeOffset.Parse("2000-01-01"), settings.SomeDateTimeOffset);
         }
 
         private SettingsFiller GetSettingsFiller()

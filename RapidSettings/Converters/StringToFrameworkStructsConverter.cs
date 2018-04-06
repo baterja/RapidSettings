@@ -27,6 +27,8 @@ namespace RapidSettings.Converters
             AddSupportForTypes(typeof(string), typeof(ulong), (rawValue, type) => ulong.Parse((string)rawValue));
             AddSupportForTypes(typeof(string), typeof(short), (rawValue, type) => short.Parse((string)rawValue));
             AddSupportForTypes(typeof(string), typeof(ushort), (rawValue, type) => ushort.Parse((string)rawValue));
+            AddSupportForTypes(typeof(string), typeof(DateTime), (rawValue, type) => DateTime.Parse((string)rawValue));
+            AddSupportForTypes(typeof(string), typeof(DateTimeOffset), (rawValue, type) => DateTimeOffset.Parse((string)rawValue));
         }
     }
 }

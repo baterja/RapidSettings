@@ -9,13 +9,13 @@ namespace RapidSettings.Providers
     /// </summary>
     public class FromFuncProvider : IRawSettingsProviderSync
     {
-        private readonly Func<object, object> rawSettingResolvingFunc;
+        private readonly Func<string, object> rawSettingResolvingFunc;
 
         /// <summary>
         /// Initializes a new instance of <see cref="FromFuncProvider"/> class.
         /// </summary>
         /// <param name="rawSettingResolvingFunc">Func which will be used to get setting's raw value.</param>
-        public FromFuncProvider(Func<object, object> rawSettingResolvingFunc)
+        public FromFuncProvider(Func<string, object> rawSettingResolvingFunc)
         {
             this.rawSettingResolvingFunc = rawSettingResolvingFunc ?? throw new RapidSettingsException($"{nameof(rawSettingResolvingFunc)} cannot be null!");
         }

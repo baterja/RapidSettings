@@ -10,13 +10,13 @@ namespace RapidSettings.Providers
     /// </summary>
     public class FromTaskFuncProvider : IRawSettingsProviderAsync
     {
-        private readonly Func<object, Task<object>> rawSettingResolvingTask;
+        private readonly Func<string, Task<object>> rawSettingResolvingTask;
 
         /// <summary>
         /// Initializes a new instance of <see cref="FromTaskFuncProvider"/> class.
         /// </summary>
         /// <param name="rawSettingResolvingTask">Func which will be used to get task which retrieves setting's raw value.</param>
-        public FromTaskFuncProvider(Func<object, Task<object>> rawSettingResolvingTask)
+        public FromTaskFuncProvider(Func<string, Task<object>> rawSettingResolvingTask)
         {
             this.rawSettingResolvingTask = rawSettingResolvingTask ?? throw new RapidSettingsException($"{nameof(rawSettingResolvingTask)} cannot be null!");
         }

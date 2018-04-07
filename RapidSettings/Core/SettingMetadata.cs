@@ -1,12 +1,11 @@
 ﻿using RapidSettings.Exceptions;
-using RapidSettings.Interfaces;
 
 namespace RapidSettings.Core
 {
     /// <summary>
     /// Provides basic metadata about retrieval/conversion of setting.
     /// </summary>
-    public class SettingMetadata : ISettingMetadata
+    public class SettingMetadata
     {
         /// <param name="key">Key by which this setting was retrieved.</param>
         /// <param name="isRequired">Indicates if successful retrieval and conversion was required.</param>

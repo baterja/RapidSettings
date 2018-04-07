@@ -27,6 +27,16 @@ namespace RapidSettings.Providers
         /// <returns>Task which retrieves raw setting value.</returns>
         public object GetRawSetting(string key)
         {
+            if (key == null)
+            {
+                throw new RapidSettingsException($"{nameof(key)} cannot be null!");
+            }
+
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new RapidSettingsException($"{nameof(key)} cannot be empty!");
+            }
+
             return this.rawSettingResolvingFunc.Invoke(key);
         }
     }

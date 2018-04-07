@@ -20,17 +20,12 @@ namespace RapidSettings.Providers
                 throw new RapidSettingsException($"{nameof(key)} cannot be null!");
             }
 
-            if (!(key is string keyString))
-            {
-                throw new RapidSettingsException($"{nameof(key)} is not a string! Its type is: {key.GetType().Name}");
-            }
-
-            if (keyString == string.Empty)
+            if (string.IsNullOrEmpty(key))
             {
                 throw new RapidSettingsException($"{nameof(key)} cannot be empty!");
             }
 
-            return ConfigurationManager.AppSettings.Get(keyString);
+            return ConfigurationManager.AppSettings.Get(key);
         }
     }
 }

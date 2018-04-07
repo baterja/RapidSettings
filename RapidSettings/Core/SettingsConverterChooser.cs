@@ -46,7 +46,7 @@ namespace RapidSettings.Core
 
             if (rawValue == null)
             {
-                throw new RapidSettingsException($"Required setting's raw value is null!");
+                throw new RapidSettingsException($"Setting's raw value is null and null cannot be converted!");
             }
 
             try

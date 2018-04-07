@@ -14,7 +14,7 @@
     <Company />
     <PackageTags>app.config;web.config;appsettings;settings;configuration;env;ConfigurationManager</PackageTags>
     <RepositoryType>git</RepositoryType>
-    <PackageLicenseUrl>http://www.wtfpl.net/</PackageLicenseUrl>
+    <PackageLicenseUrl>http://unlicense.org/</PackageLicenseUrl>
     <Description>Simple and extensible way to make web.config/app.config/env vars/whatever easier to read and strongly typed!</Description>
   </PropertyGroup>
 

@@ -3,14 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2005
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{D3281088-594B-4BCC-94E4-72FF253D3978}") = "RapidSettings", "RapidSettings\RapidSettings.csproj", "{9D7AC9D5-02E2-4E24-9CDC-E3DA001691E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RapidSettings", "RapidSettings\RapidSettings.csproj", "{9D7AC9D5-02E2-4E24-9CDC-E3DA001691E6}"
 EndProject
-Project("{BFCDA765-E73D-4AF0-B3BC-309E7BC844F6}") = "RapidSettings.Tests", "RapidSettings.Tests\RapidSettings.Tests.csproj", "{40658081-EE70-44E5-A25E-36A3383DF289}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RapidSettings.Tests", "RapidSettings.Tests\RapidSettings.Tests.csproj", "{40658081-EE70-44E5-A25E-36A3383DF289}"
 EndProject
-Project("{ECE35341-CF1D-4BC1-84DA-452E03B83845}") = "RapidSettings.Converters", "RapidSettings.Converters\RapidSettings.Converters.csproj", "{3A3B56F6-8555-4EA2-B78D-EE14D377F633}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RapidSettings.Converters", "RapidSettings.Converters\RapidSettings.Converters.csproj", "{3A3B56F6-8555-4EA2-B78D-EE14D377F633}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{41A849FD-5B27-4B1E-BDF8-FA2C9525A09F}"
 	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
 EndProject

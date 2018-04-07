@@ -108,6 +108,11 @@ namespace RapidSettings.Core
             var requestedRawSettingsProviderName = toFillAttribute.RawSettingsProviderName;
             var rawSettingsProvider = this.ChooseRawSettingsProvider(requestedRawSettingsProviderName);
             var rawSetting = this.GetRawSetting(rawSettingsProvider, toFillAttribute.Key);
+
+            if (rawSetting == null && toFillAttribute.IsRequired)
+            {
+                throw new RapidSettingsException($"Resolution of required setting {propToFill.Name} returned null!");
+            }
             #endregion
 
             #region Conversion
@@ -164,6 +169,11 @@ namespace RapidSettings.Core
             var requestedRawSettingsProviderName = toFillAttribute.RawSettingsProviderName;
             var rawSettingsProvider = this.ChooseRawSettingsProvider(requestedRawSettingsProviderName);
             var rawSetting = await this.GetRawSettingAsync(rawSettingsProvider, toFillAttribute.Key);
+
+            if (rawSetting == null && toFillAttribute.IsRequired)
+            {
+                throw new RapidSettingsException($"Resolution of required setting {propToFill.Name} returned null!");
+            }
             #endregion
 
             #region Conversion

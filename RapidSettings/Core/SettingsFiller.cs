@@ -27,7 +27,12 @@ namespace RapidSettings.Core
         /// Initializes a new instance of <see cref="SettingsFiller"/> class with converter chooser and default raw settings provider.
         /// </summary>
         public SettingsFiller(ISettingsConverterChooser settingsConverterChooser, IRawSettingsProvider defaultRawSettingsProvider)
-            : this(settingsConverterChooser, new Dictionary<string, IRawSettingsProvider> { { defaultRawSettingsProvider?.GetType().Name, defaultRawSettingsProvider } })
+            : this(
+                  settingsConverterChooser,
+                  new Dictionary<string, IRawSettingsProvider> {
+                      { defaultRawSettingsProvider?.GetType().Name ?? throw new RapidSettingsException($"{nameof(defaultRawSettingsProvider)} cannot be null!"), defaultRawSettingsProvider }
+                  }
+            )
         { }
 
         /// <summary>
@@ -59,38 +64,38 @@ namespace RapidSettings.Core
         }
 
         /// <summary>
-        /// Fills <paramref name="objectWithDecoratedMembers"/> members decorated with <see cref="ToFillAttribute"/>.
+        /// Fills <paramref name="objectWithDecoratedProps"/> properties decorated with <see cref="ToFillAttribute"/>.
         /// </summary>
-        public void FillSettings<T>(T objectWithDecoratedMembers)
+        public void FillSettings<T>(T objectWithDecoratedProps)
         {
-            var membersToFill = this.GetMembersToFill(typeof(T));
-            foreach (var memberToFill in membersToFill)
+            var propertiesToFill = this.GetPropertiesToFill(typeof(T));
+            foreach (var propToFill in propertiesToFill)
             {
-                var setting = this.ResolveSetting<T>(memberToFill);
-                this.FillMember(memberToFill, objectWithDecoratedMembers, setting);
+                var setting = this.ResolveSetting<T>(propToFill);
+                propToFill.SetValue(objectWithDecoratedProps, setting);
             }
         }
 
         /// <summary>
-        /// Asynchronously fills <paramref name="objectWithDecoratedMembers"/> members decorated with <see cref="ToFillAttribute"/>.
+        /// Asynchronously fills <paramref name="objectWithDecoratedProps"/> properties decorated with <see cref="ToFillAttribute"/>.
         /// </summary>
-        public async Task FillSettingsAsync<T>(T objectWithDecoratedMembers)
+        public async Task FillSettingsAsync<T>(T objectWithDecoratedProps)
         {
-            var membersToFill = this.GetMembersToFill(typeof(T));
-            foreach (var memberToFill in membersToFill)
+            var propertiesToFill = this.GetPropertiesToFill(typeof(T));
+            foreach (var propToFill in propertiesToFill)
             {
-                var setting = await this.ResolveSettingAsync<T>(memberToFill);
-                this.FillMember(memberToFill, objectWithDecoratedMembers, setting);
+                // TODO parallelization based on some setting 
+
+                var setting = await this.ResolveSettingAsync<T>(propToFill);
+                propToFill.SetValue(objectWithDecoratedProps, setting);
             }
         }
 
-        private object ResolveSetting<T>(MemberInfo memberToFill)
+        private object ResolveSetting<T>(PropertyInfo propToFill)
         {
-            var memberType = this.GetMemberType(memberToFill);
-
             #region ISetting support
-            var isISetting = this.IsISetting(memberType);
-            var typeOfMemberToSet = isISetting ? this.GetUndelayingType(memberType) : memberType;
+            var isISetting = this.IsISetting(propToFill.PropertyType);
+            var typeOfMemberToSet = isISetting ? this.GetUndelayingType(propToFill.PropertyType) : propToFill.PropertyType;
             #endregion
 
             #region Nullable support
@@ -99,7 +104,7 @@ namespace RapidSettings.Core
             #endregion
 
             #region Resolution
-            var toFillAttribute = memberToFill.GetCustomAttribute<ToFillAttribute>();
+            var toFillAttribute = propToFill.GetCustomAttribute<ToFillAttribute>();
             var requestedRawSettingsProviderName = toFillAttribute.RawSettingsProviderName;
             var rawSettingsProvider = this.ChooseRawSettingsProvider(requestedRawSettingsProviderName);
             var rawSetting = this.GetRawSetting(rawSettingsProvider, toFillAttribute.Key);
@@ -123,7 +128,7 @@ namespace RapidSettings.Core
             {
                 if (toFillAttribute.IsRequired)
                 {
-                    throw new RapidSettingsException($"Conversion of required setting {memberToFill.Name} failed!", e);
+                    throw new RapidSettingsException($"Conversion of required setting {propToFill.Name} failed!", e);
                 }
 
                 hasValueSpecified = false;
@@ -142,13 +147,11 @@ namespace RapidSettings.Core
             return setting;
         }
 
-        private async Task<object> ResolveSettingAsync<T>(MemberInfo memberToFill)
+        private async Task<object> ResolveSettingAsync<T>(PropertyInfo propToFill)
         {
-            var memberType = this.GetMemberType(memberToFill);
-
             #region ISetting support
-            var isISetting = this.IsISetting(memberType);
-            var typeOfMemberToSet = isISetting ? this.GetUndelayingType(memberType) : memberType;
+            var isISetting = this.IsISetting(propToFill.PropertyType);
+            var typeOfMemberToSet = isISetting ? this.GetUndelayingType(propToFill.PropertyType) : propToFill.PropertyType;
             #endregion
 
             #region Nullable support
@@ -157,7 +160,7 @@ namespace RapidSettings.Core
             #endregion
 
             #region Resolution
-            var toFillAttribute = memberToFill.GetCustomAttribute<ToFillAttribute>();
+            var toFillAttribute = propToFill.GetCustomAttribute<ToFillAttribute>();
             var requestedRawSettingsProviderName = toFillAttribute.RawSettingsProviderName;
             var rawSettingsProvider = this.ChooseRawSettingsProvider(requestedRawSettingsProviderName);
             var rawSetting = await this.GetRawSettingAsync(rawSettingsProvider, toFillAttribute.Key);
@@ -181,7 +184,7 @@ namespace RapidSettings.Core
             {
                 if (toFillAttribute.IsRequired)
                 {
-                    throw new RapidSettingsException($"Conversion of required setting {memberToFill.Name} failed!", e);
+                    throw new RapidSettingsException($"Conversion of required setting {propToFill.Name} failed!", e);
                 }
 
                 hasValueSpecified = false;
@@ -198,36 +201,6 @@ namespace RapidSettings.Core
             #endregion
 
             return setting;
-        }
-
-        private void FillMember(MemberInfo memberToFill, object instanceOfObjectToFill, object valueToFillWith)
-        {
-            switch (memberToFill)
-            {
-                case PropertyInfo propertyInfo:
-                    propertyInfo.SetValue(instanceOfObjectToFill, valueToFillWith);
-                    break;
-                case FieldInfo fieldInfo:
-                    fieldInfo.SetValue(instanceOfObjectToFill, valueToFillWith);
-                    break;
-                default:
-                    // should never be there
-                    throw new RapidSettingsException($"{nameof(ISetting<object>)} can be only used on properties or fields! You've somehow used it on {memberToFill.MemberType}");
-            }
-        }
-
-        private Type GetMemberType(MemberInfo memberInfo)
-        {
-            switch (memberInfo)
-            {
-                case PropertyInfo propertyInfo:
-                    return propertyInfo.PropertyType;
-                case FieldInfo fieldInfo:
-                    return fieldInfo.FieldType;
-                default:
-                    // should never be there
-                    throw new RapidSettingsException($"{nameof(ISetting<object>)} can be only used on properties or fields! You've somehow used it on {memberInfo.MemberType}");
-            }
         }
 
         private object GetRawSetting(IRawSettingsProvider rawSettingsProvider, string settingKey)
@@ -275,14 +248,13 @@ namespace RapidSettings.Core
             return this.RawSettingsProvidersByNames[requestedRawSettingsProviderName];
         }
 
-        private IEnumerable<MemberInfo> GetMembersToFill(Type typeOfObjectToFill)
+        private IEnumerable<PropertyInfo> GetPropertiesToFill(Type typeOfObjectToFill)
         {
             // TODO respect nonpublic
-            // TODO respect canwrite, readonly
-            // TODO respect prop/field choosing
-            var membersToFill = typeOfObjectToFill.GetMembers().Where(prop => prop.IsDefined(typeof(ToFillAttribute), true));
+            // TODO respect canwrite
+            var propertiesToFill = typeOfObjectToFill.GetProperties().Where(prop => prop.IsDefined(typeof(ToFillAttribute), true));
 
-            return membersToFill;
+            return propertiesToFill;
         }
 
         /// <summary>

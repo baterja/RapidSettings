@@ -5,6 +5,7 @@ TODOs before I can name it 1.0 version:
 - [ ] Test everything thoroughly,
 - [ ] Learn how to use AppVeyor to properly patch version numbers,
 - [ ] Create some QuickStart or another tutorial,
+- [ ] Organize namespaces because it's too many of them to do so few things,
 
 And after that maybe...:
 - [ ] Create separate packages with more advanced Converters and Providers,

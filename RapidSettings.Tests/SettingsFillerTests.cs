@@ -76,6 +76,21 @@ namespace RapidSettings.Tests.Attributes
             Assert.AreEqual(default(int), settings.SomeNonConvertibleSetting);
         }
 
+        private class SettingsWithUnretrievableProp
+        {
+            [ToFill("badKey")]
+            public int SomeSetting1 { get; private set; }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(RapidSettingsException))]
+        public void SettingsFillerTest_NullResolutionOfRequired()
+        {
+            var settingsFiller = this.GetBasicSettingsFiller();
+
+            var settings = settingsFiller.CreateWithSettings<SettingsWithUnretrievableProp>();
+        }
+
         private SettingsFiller GetBasicSettingsFiller()
         {
             var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkStructsConverter() });

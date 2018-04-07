@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RapidSettings.Exceptions;
-using RapidSettings.Providers;
+using RapidSettings.Core;
 using System.Threading.Tasks;
 
 namespace RapidSettings.Tests.Converters

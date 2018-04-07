@@ -1,10 +1,9 @@
-﻿using RapidSettings.Exceptions;
-using RapidSettings.Interfaces;
+﻿using RapidSettings.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RapidSettings.Converters
+namespace RapidSettings.Core
 {
     /// <summary>
     /// Provides base class for easier creation of converters. Among others: unwrapping nullable types, checking for null value, choosing and applying proper Func.

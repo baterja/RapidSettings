@@ -1,9 +1,8 @@
-﻿using RapidSettings.Exceptions;
-using RapidSettings.Interfaces;
+﻿using RapidSettings.Interfaces;
 using System;
 using System.Threading.Tasks;
 
-namespace RapidSettings.Providers
+namespace RapidSettings.Core
 {
     /// <summary>
     /// Customizable settings provider which provides its value asynchronously.

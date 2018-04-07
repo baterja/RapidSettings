@@ -1,6 +1,4 @@
-﻿using RapidSettings.Exceptions;
-
-namespace RapidSettings.Core
+﻿namespace RapidSettings.Core
 {
     /// <summary>
     /// Provides basic metadata about retrieval/conversion of setting.

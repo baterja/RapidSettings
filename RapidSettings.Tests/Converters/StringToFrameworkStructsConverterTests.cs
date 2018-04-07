@@ -1,8 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RapidSettings.Converters;
 using RapidSettings.Core;
-using RapidSettings.Interfaces;
-using RapidSettings.Providers;
 using System;
 using System.Linq;
 

@@ -1,8 +1,8 @@
-﻿using RapidSettings.Core;
-using System.Threading.Tasks;
-
-namespace RapidSettings.Interfaces
+﻿namespace RapidSettings.Interfaces
 {
+    using RapidSettings.Core;
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Interface for a class which asynchronously fills members decorated <see cref="ToFillAttribute"/> of given class instance.
     /// </summary>
@@ -14,6 +14,12 @@ namespace RapidSettings.Interfaces
         /// <param name="objectToFill">Object instance which decorated members should be filled.</param>
         Task FillSettingsAsync<T>(T objectToFill);
     }
+}
+
+namespace RapidSettings.Core
+{
+    using RapidSettings.Interfaces;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Provides extension method for <see cref="ISettingsFillerAsync"/> which creates instance of a class which should be filled.

@@ -1,8 +1,7 @@
-﻿using RapidSettings.Exceptions;
-using RapidSettings.Interfaces;
+﻿using RapidSettings.Interfaces;
 using System;
 
-namespace RapidSettings.Providers
+namespace RapidSettings.Core
 {
     /// <summary>
     /// Customizable settings provider which provides its value by a func.

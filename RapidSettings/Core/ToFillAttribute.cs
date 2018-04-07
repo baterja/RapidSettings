@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using RapidSettings.Exceptions;
 using RapidSettings.Interfaces;
 
 namespace RapidSettings.Core

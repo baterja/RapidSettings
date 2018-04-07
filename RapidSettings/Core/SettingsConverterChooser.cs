@@ -1,5 +1,4 @@
-﻿using RapidSettings.Exceptions;
-using RapidSettings.Interfaces;
+﻿using RapidSettings.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;

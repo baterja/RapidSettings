@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RapidSettings.Converters
+namespace RapidSettings.Core
 {
     /// <summary>
     /// Provides converting methods from string to basic framework structs (int, bool, etc.) and string.

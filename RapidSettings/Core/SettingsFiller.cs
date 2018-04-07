@@ -1,5 +1,4 @@
-﻿using RapidSettings.Exceptions;
-using RapidSettings.Interfaces;
+﻿using RapidSettings.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -95,7 +94,7 @@ namespace RapidSettings.Core
         {
             #region Setting wrapper support
             var isSetting = propToFill.PropertyType.IsGenericType && propToFill.PropertyType.GetGenericTypeDefinition() == typeof(Setting<>);
-            var typeOfMemberToSet = isSetting ? this.GetUndelayingType(propToFill.PropertyType) : propToFill.PropertyType;
+            var typeOfMemberToSet = isSetting ? this.GetWrappedType(propToFill.PropertyType) : propToFill.PropertyType;
             #endregion
 
             #region Nullable support
@@ -158,7 +157,7 @@ namespace RapidSettings.Core
         {
             #region Setting wrapper support
             var isSetting = propToFill.PropertyType.IsGenericType && propToFill.PropertyType.GetGenericTypeDefinition() == typeof(Setting<>);
-            var typeOfMemberToSet = isSetting ? this.GetUndelayingType(propToFill.PropertyType) : propToFill.PropertyType;
+            var typeOfMemberToSet = isSetting ? this.GetWrappedType(propToFill.PropertyType) : propToFill.PropertyType;
             #endregion
 
             #region Nullable support
@@ -272,9 +271,9 @@ namespace RapidSettings.Core
         }
 
         /// <summary>
-        /// Gets underlaying <see cref="Type"/> of given <paramref name="propertyType"/>. Used to get generic type parameter from subclass of <see cref="ISetting{T}"/>.
+        /// Gets <see cref="Type"/> that is wrapped in <see cref="Setting{T}"/>.
         /// </summary>
-        private Type GetUndelayingType(Type propertyType)
+        private Type GetWrappedType(Type propertyType)
         {
             return propertyType.GetGenericArguments().First();
         }

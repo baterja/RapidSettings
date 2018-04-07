@@ -1,6 +1,4 @@
-﻿using RapidSettings.Exceptions;
-
-namespace RapidSettings.Core
+﻿namespace RapidSettings.Core
 {
     /// <summary>
     /// Wrapper for some setting value which contains <see cref="Metadata"/> about its retrieval and conversion.

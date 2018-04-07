@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace RapidSettings.Exceptions
+namespace RapidSettings.Core
 {
     /// <summary>
     /// Custom exception that is thrown by classes from this assembly when something wrong happens.

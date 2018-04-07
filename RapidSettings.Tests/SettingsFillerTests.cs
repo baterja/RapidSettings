@@ -1,9 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RapidSettings.Converters;
 using RapidSettings.Core;
-using RapidSettings.Exceptions;
 using RapidSettings.Interfaces;
-using RapidSettings.Providers;
 using System;
 using System.Collections.Generic;
 using System.Linq;

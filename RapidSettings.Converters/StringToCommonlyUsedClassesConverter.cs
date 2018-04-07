@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RapidSettings.Core;
+using System;
 using System.Net.Mail;
 
 namespace RapidSettings.Converters

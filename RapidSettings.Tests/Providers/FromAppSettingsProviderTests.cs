@@ -1,9 +1,6 @@
 ﻿#if !NETCOREAPP2_0 // NET Core AppSettings incorrectly gets config file in tests
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RapidSettings.Exceptions;
-using RapidSettings.Providers;
-using System;
-using System.IO;
+using RapidSettings.Core;
 
 namespace RapidSettings.Tests.Converters
 {

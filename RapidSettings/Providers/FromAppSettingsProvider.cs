@@ -1,8 +1,7 @@
-﻿using RapidSettings.Exceptions;
-using RapidSettings.Interfaces;
+﻿using RapidSettings.Interfaces;
 using System.Configuration;
 
-namespace RapidSettings.Providers
+namespace RapidSettings.Core
 {
     /// <summary>
     /// Provides raw setting value from app.config/web.config.

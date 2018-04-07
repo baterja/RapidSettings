@@ -1,7 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RapidSettings.Converters;
 using RapidSettings.Core;
-using RapidSettings.Exceptions;
 using RapidSettings.Interfaces;
 using System;
 

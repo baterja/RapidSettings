@@ -71,7 +71,7 @@ namespace RapidSettings.Core
             var propertiesToFill = this.GetPropertiesToFill(typeof(T));
             foreach (var propToFill in propertiesToFill)
             {
-                var setting = this.ResolveSetting<T>(propToFill);
+                var setting = this.ResolveSetting(propToFill);
                 propToFill.SetValue(objectWithDecoratedProps, setting);
             }
         }
@@ -86,127 +86,131 @@ namespace RapidSettings.Core
             {
                 // TODO parallelization based on some setting 
 
-                var setting = await this.ResolveSettingAsync<T>(propToFill);
+                var setting = await this.ResolveSettingAsync(propToFill);
                 propToFill.SetValue(objectWithDecoratedProps, setting);
             }
         }
 
-        private object ResolveSetting<T>(PropertyInfo propToFill)
+        private object ResolveSetting(PropertyInfo propToFill)
         {
-            #region ISetting support
-            var isISetting = this.IsISetting(propToFill.PropertyType);
-            var typeOfMemberToSet = isISetting ? this.GetUndelayingType(propToFill.PropertyType) : propToFill.PropertyType;
+            #region Setting wrapper support
+            var isSetting = propToFill.PropertyType.IsGenericType && propToFill.PropertyType.GetGenericTypeDefinition() == typeof(Setting<>);
+            var typeOfMemberToSet = isSetting ? this.GetUndelayingType(propToFill.PropertyType) : propToFill.PropertyType;
             #endregion
 
             #region Nullable support
             var underlayingTypeOfNullable = Nullable.GetUnderlyingType(typeOfMemberToSet);
-            typeOfMemberToSet = underlayingTypeOfNullable ?? typeOfMemberToSet;
+            var unwrappedTypeOfPropToSet = underlayingTypeOfNullable ?? typeOfMemberToSet;
             #endregion
 
-            #region Resolution
+            #region Resolution & Conversion
             var toFillAttribute = propToFill.GetCustomAttribute<ToFillAttribute>();
             var requestedRawSettingsProviderName = toFillAttribute.RawSettingsProviderName;
             var rawSettingsProvider = this.ChooseRawSettingsProvider(requestedRawSettingsProviderName);
             var rawSetting = this.GetRawSetting(rawSettingsProvider, toFillAttribute.Key);
 
-            if (rawSetting == null && toFillAttribute.IsRequired)
-            {
-                throw new RapidSettingsException($"Resolution of required setting {propToFill.Name} returned null!");
-            }
-            #endregion
-
-            #region Conversion
-
-            // TODO make conversion optional (basing on some setting) when rawSetting's type is assignable to typeOfMemberToSet
-
-            var convertMethod = typeof(ISettingsConverterChooser).GetMethod(nameof(ISettingsConverterChooser.ChooseAndConvert));
-            var convertGenericMethod = convertMethod.MakeGenericMethod(rawSetting.GetType(), typeOfMemberToSet);
-
-            bool hasValueSpecified;
-            object settingValue = default(T);
-            try
-            {
-                settingValue = convertGenericMethod.Invoke(this.SettingsConverterChooser, new[] { rawSetting });
-                hasValueSpecified = true;
-            }
-            catch (Exception e)
+            object settingValue = typeOfMemberToSet.IsValueType ? Activator.CreateInstance(typeOfMemberToSet) : null;
+            var hasValueSpecified = rawSetting != null;
+            if (!hasValueSpecified)
             {
                 if (toFillAttribute.IsRequired)
                 {
-                    throw new RapidSettingsException($"Conversion of required setting {propToFill.Name} failed!", e);
+                    throw new RapidSettingsException($"Resolution of required setting {propToFill.Name} returned null!");
                 }
+            }
+            else
+            {
+                // TODO make conversion optional (basing on some setting) when rawSetting's type is assignable to typeOfMemberToSet
 
-                hasValueSpecified = false;
+                var convertMethod = typeof(ISettingsConverterChooser).GetMethod(nameof(ISettingsConverterChooser.ChooseAndConvert));
+                var convertGenericMethod = convertMethod.MakeGenericMethod(rawSetting.GetType(), unwrappedTypeOfPropToSet);
+
+                try
+                {
+                    settingValue = convertGenericMethod.Invoke(this.SettingsConverterChooser, new[] { rawSetting });
+                    hasValueSpecified = true;
+                }
+                catch (Exception e)
+                {
+                    if (toFillAttribute.IsRequired)
+                    {
+                        throw new RapidSettingsException($"Conversion of required setting {propToFill.Name} failed!", e);
+                    }
+
+                    hasValueSpecified = false;
+                }
             }
             #endregion
 
-            #region ISetting support
+            #region Setting support
             object setting = settingValue;
-            if (isISetting)
+            if (isSetting)
             {
                 var settingMetadata = new SettingMetadata(toFillAttribute.Key, toFillAttribute.IsRequired, hasValueSpecified);
-                setting = new Setting<T>((T)settingValue, settingMetadata);
+                setting = Activator.CreateInstance(typeof(Setting<>).MakeGenericType(propToFill.PropertyType.GetGenericArguments()), new object[] { settingValue, settingMetadata });
             }
             #endregion
 
             return setting;
         }
 
-        private async Task<object> ResolveSettingAsync<T>(PropertyInfo propToFill)
+        private async Task<object> ResolveSettingAsync(PropertyInfo propToFill)
         {
-            #region ISetting support
-            var isISetting = this.IsISetting(propToFill.PropertyType);
-            var typeOfMemberToSet = isISetting ? this.GetUndelayingType(propToFill.PropertyType) : propToFill.PropertyType;
+            #region Setting wrapper support
+            var isSetting = propToFill.PropertyType.IsGenericType && propToFill.PropertyType.GetGenericTypeDefinition() == typeof(Setting<>);
+            var typeOfMemberToSet = isSetting ? this.GetUndelayingType(propToFill.PropertyType) : propToFill.PropertyType;
             #endregion
 
             #region Nullable support
             var underlayingTypeOfNullable = Nullable.GetUnderlyingType(typeOfMemberToSet);
-            typeOfMemberToSet = underlayingTypeOfNullable ?? typeOfMemberToSet;
+            var unwrappedTypeOfPropToSet = underlayingTypeOfNullable ?? typeOfMemberToSet;
             #endregion
 
-            #region Resolution
+            #region Resolution & Conversion
             var toFillAttribute = propToFill.GetCustomAttribute<ToFillAttribute>();
             var requestedRawSettingsProviderName = toFillAttribute.RawSettingsProviderName;
             var rawSettingsProvider = this.ChooseRawSettingsProvider(requestedRawSettingsProviderName);
             var rawSetting = await this.GetRawSettingAsync(rawSettingsProvider, toFillAttribute.Key);
 
-            if (rawSetting == null && toFillAttribute.IsRequired)
-            {
-                throw new RapidSettingsException($"Resolution of required setting {propToFill.Name} returned null!");
-            }
-            #endregion
-
-            #region Conversion
-
-            // TODO make conversion optional (basing on some setting) when rawSetting's type is assignable to typeOfMemberToSet
-
-            var convertMethod = typeof(ISettingsConverterChooser).GetMethod(nameof(ISettingsConverterChooser.ChooseAndConvert));
-            var convertGenericMethod = convertMethod.MakeGenericMethod(rawSetting.GetType(), typeOfMemberToSet);
-
-            bool hasValueSpecified;
-            object settingValue = default(T);
-            try
-            {
-                settingValue = convertGenericMethod.Invoke(this.SettingsConverterChooser, new[] { rawSetting });
-                hasValueSpecified = true;
-            }
-            catch (Exception e)
+            object settingValue = typeOfMemberToSet.IsValueType ? Activator.CreateInstance(typeOfMemberToSet) : null;
+            var hasValueSpecified = rawSetting != null;
+            if (!hasValueSpecified)
             {
                 if (toFillAttribute.IsRequired)
                 {
-                    throw new RapidSettingsException($"Conversion of required setting {propToFill.Name} failed!", e);
+                    throw new RapidSettingsException($"Resolution of required setting {propToFill.Name} returned null!");
                 }
+            }
+            else
+            {
+                // TODO make conversion optional (basing on some setting) when rawSetting's type is assignable to typeOfMemberToSet
 
-                hasValueSpecified = false;
+                var convertMethod = typeof(ISettingsConverterChooser).GetMethod(nameof(ISettingsConverterChooser.ChooseAndConvert));
+                var convertGenericMethod = convertMethod.MakeGenericMethod(rawSetting.GetType(), unwrappedTypeOfPropToSet);
+
+                try
+                {
+                    settingValue = convertGenericMethod.Invoke(this.SettingsConverterChooser, new[] { rawSetting });
+                    hasValueSpecified = true;
+                }
+                catch (Exception e)
+                {
+                    if (toFillAttribute.IsRequired)
+                    {
+                        throw new RapidSettingsException($"Conversion of required setting {propToFill.Name} failed!", e);
+                    }
+
+                    hasValueSpecified = false;
+                }
             }
             #endregion
 
-            #region ISetting support
+            #region Setting support
             object setting = settingValue;
-            if (isISetting)
+            if (isSetting)
             {
                 var settingMetadata = new SettingMetadata(toFillAttribute.Key, toFillAttribute.IsRequired, hasValueSpecified);
-                setting = new Setting<T>((T)settingValue, settingMetadata);
+                setting = Activator.CreateInstance(typeof(Setting<>).MakeGenericType(propToFill.PropertyType.GetGenericArguments()), new object[] { settingValue, settingMetadata });
             }
             #endregion
 
@@ -273,17 +277,6 @@ namespace RapidSettings.Core
         private Type GetUndelayingType(Type propertyType)
         {
             return propertyType.GetGenericArguments().First();
-        }
-
-        /// <summary>
-        /// Checks if <paramref name="propertyType"/> implements <see cref="ISetting{T}"/>.
-        /// </summary>
-        /// <remarks>
-        /// Used to determine if prop/field is wrapped in <see cref="ISetting{T}"/>.
-        /// </remarks>
-        private bool IsISetting(Type propertyType)
-        {
-            return propertyType.GetInterfaces().Where(i => i.IsGenericType).Any(i => i.GetGenericTypeDefinition() == typeof(ISetting<>));
         }
     }
 }

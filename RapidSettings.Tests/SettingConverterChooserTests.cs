@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RapidSettings.Core;
-using RapidSettings.Interfaces;
 using System;
 
 namespace RapidSettings.Tests.Attributes

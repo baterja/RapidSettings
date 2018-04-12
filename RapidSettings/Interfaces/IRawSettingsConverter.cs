@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RapidSettings.Interfaces
+namespace RapidSettings.Core
 {
     /// <summary>
     /// Should <see cref="Convert{TFrom, TTo}(TFrom)"/> types which it declares that it <see cref="CanConvert(Type, Type)"/>.

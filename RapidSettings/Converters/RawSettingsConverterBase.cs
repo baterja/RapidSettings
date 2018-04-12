@@ -1,4 +1,4 @@
-﻿using RapidSettings.Interfaces;
+﻿using RapidSettings.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;

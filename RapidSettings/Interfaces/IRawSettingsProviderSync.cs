@@ -1,4 +1,4 @@
-﻿namespace RapidSettings.Interfaces
+﻿namespace RapidSettings.Core
 {
     /// <summary>
     /// Gets raw values of settings.

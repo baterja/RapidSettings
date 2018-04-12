@@ -1,7 +1,5 @@
-﻿namespace RapidSettings.Interfaces
+﻿namespace RapidSettings.Core
 {
-    using RapidSettings.Core;
-
     /// <summary>
     /// Interface for a class which fills members decorated <see cref="ToFillAttribute"/> of given class instance.
     /// </summary>
@@ -13,11 +11,6 @@
         /// <param name="objectToFill">Object instance which decorated members should be filled.</param>
         void FillSettings<T>(T objectToFill);
     }
-}
-
-namespace RapidSettings.Core
-{
-    using RapidSettings.Interfaces;
 
     /// <summary>
     /// Provides extension method for <see cref="ISettingsFillerSync"/> which creates instance of a class which should be filled.

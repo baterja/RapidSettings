@@ -31,5 +31,13 @@
         /// Key which was used to retrieve this setting.
         /// </summary>
         public string Key { get; }
+
+        /// <summary>
+        /// Returns names of properties and their values in (subjectively selected) order: <see cref="Key"/>, <see cref="HasValueSpecified"/>, <see cref="IsRequired"/>.
+        /// </summary>
+        public override string ToString()
+        {
+            return $"{nameof(this.Key)}: {this.Key}, {nameof(this.HasValueSpecified)}: {this.HasValueSpecified}, {nameof(this.IsRequired)}: {this.IsRequired}";
+        }
     }
 }

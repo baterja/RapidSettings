@@ -2,7 +2,7 @@
 Simple and extensible way to make web.config/app.config/env vars/whatever easier to read and strongly typed!
 
 TODOs before I can name it 1.0 version:
-- [ ] Test everything thoroughly,
+- [x] Test everything thoroughly,
 - [ ] Learn how to use AppVeyor to properly patch version numbers,
 - [ ] Create some QuickStart or another tutorial,
 - [x] Organize namespaces because it's too many of them to do so few things,

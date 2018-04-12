@@ -26,5 +26,13 @@
         /// Value of the setting.
         /// </summary>
         public T Value { get; }
+
+        /// <summary>
+        /// Returns <see cref="Value"/>?.ToString();
+        /// </summary>
+        public override string ToString()
+        {
+            return this.Value?.ToString();
+        }
     }
 }

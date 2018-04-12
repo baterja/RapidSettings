@@ -1,5 +1,4 @@
-﻿using RapidSettings.Interfaces;
-using System.Configuration;
+﻿using System.Configuration;
 
 namespace RapidSettings.Core
 {

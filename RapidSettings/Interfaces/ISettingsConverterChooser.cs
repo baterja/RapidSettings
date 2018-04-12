@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace RapidSettings.Interfaces
+namespace RapidSettings.Core
 {
     /// <summary>
     /// Provides interface for a class that chooses one of its <see cref="Converters"/> to <see cref="ChooseAndConvert{TFrom, TTo}(TFrom)"/> properly.

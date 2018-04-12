@@ -1,5 +1,4 @@
-﻿using RapidSettings.Interfaces;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 
 namespace RapidSettings.Core

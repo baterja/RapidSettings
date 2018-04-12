@@ -6,9 +6,9 @@ using System.Linq;
 namespace RapidSettings.Tests.Converters
 {
     [TestClass]
-    public class StringToFrameworkStructsConverterTests
+    public class StringToFrameworkTypesConverterTests
     {
-        private class NumericFrameworkStructsSettings
+        private class NumericFrameworkTypesSettings
         {
             [ToFill]
             public int Int1 { get; private set; }
@@ -49,7 +49,7 @@ namespace RapidSettings.Tests.Converters
         {
             var settingsFiller = this.GetSettingsFiller();
 
-            var settings = settingsFiller.CreateWithSettings<NumericFrameworkStructsSettings>();
+            var settings = settingsFiller.CreateWithSettings<NumericFrameworkTypesSettings>();
 
             #region Properties
             Assert.AreEqual(1, settings.Byte1);
@@ -82,7 +82,7 @@ namespace RapidSettings.Tests.Converters
             Assert.AreEqual(1, settings.Int1.Value);
         }
 
-        private class NonNumericFrameworkStructsSettings
+        private class NonNumericFrameworkTypesSettings
         {
             [ToFill]
             public bool SomeBoolean { get; private set; }
@@ -98,12 +98,15 @@ namespace RapidSettings.Tests.Converters
 
             [ToFill]
             public DateTimeOffset SomeDateTimeOffset { get; private set; }
+
+            [ToFill]
+            public Uri SomeUri { get; private set; }
         }
 
         [TestMethod]
         public void NonNumericSimpleFrameworkStructsTest()
         {
-            var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkStructsConverter() });
+            var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
             var rawSettingsProvider = new FromFuncProvider(key =>
             {
                 switch (key)
@@ -118,6 +121,8 @@ namespace RapidSettings.Tests.Converters
                         return "2000-01-01";
                     case string x when x.EndsWith(typeof(DateTimeOffset).Name, StringComparison.InvariantCultureIgnoreCase):
                         return "2000-01-01";
+                    case string x when x.EndsWith(typeof(Uri).Name, StringComparison.InvariantCultureIgnoreCase):
+                        return "https://nuget.org";
                     default:
                         throw new ArgumentOutOfRangeException($"{nameof(key)} with value {key} is out of range of handled keys!");
                 }
@@ -125,18 +130,19 @@ namespace RapidSettings.Tests.Converters
 
             var settingsFiller = new SettingsFiller(converterChooser, rawSettingsProvider);
 
-            var settings = settingsFiller.CreateWithSettings<NonNumericFrameworkStructsSettings>();
+            var settings = settingsFiller.CreateWithSettings<NonNumericFrameworkTypesSettings>();
 
             Assert.AreEqual(true, settings.SomeBoolean);
             Assert.IsTrue(default(Guid) != settings.SomeGuid);
             Assert.AreEqual("asdf", settings.SomeString);
             Assert.AreEqual(DateTime.Parse("2000-01-01"), settings.SomeDateTime);
             Assert.AreEqual(DateTimeOffset.Parse("2000-01-01"), settings.SomeDateTimeOffset);
+            Assert.AreEqual(new Uri("https://nuget.org"), settings.SomeUri);
         }
 
         private SettingsFiller GetSettingsFiller()
         {
-            var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkStructsConverter() });
+            var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
             var rawSettingsProvider = new FromFuncProvider(key => key.ToString().Last().ToString());
             var settingsFiller = new SettingsFiller(converterChooser, rawSettingsProvider);
 

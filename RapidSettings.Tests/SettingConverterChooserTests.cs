@@ -11,7 +11,7 @@ namespace RapidSettings.Tests.Attributes
         [TestMethod]
         public void SettingConverterChooserTest_StringToItsInterface()
         {
-            var settingConverterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkStructsConverter() });
+            var settingConverterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
 
             IConvertible strVal = settingConverterChooser.ChooseAndConvert<string, IConvertible>("123");
 
@@ -65,7 +65,7 @@ namespace RapidSettings.Tests.Attributes
         [TestMethod]
         public void SettingConverterChooserTest_ChooseProperConverter()
         {
-            var settingConverterChooser = new SettingsConverterChooser(new IRawSettingsConverter[] { new SuperConverter(), new StringToFrameworkStructsConverter() });
+            var settingConverterChooser = new SettingsConverterChooser(new IRawSettingsConverter[] { new SuperConverter(), new StringToFrameworkTypesConverter() });
 
             var bInstance = new B();
             A aInstance = settingConverterChooser.ChooseAndConvert<B, A>(bInstance);

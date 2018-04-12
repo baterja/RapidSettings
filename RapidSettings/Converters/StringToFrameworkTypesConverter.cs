@@ -3,14 +3,14 @@
 namespace RapidSettings.Core
 {
     /// <summary>
-    /// Provides converting methods from string to basic framework structs (int, bool, etc.) and string.
+    /// Provides converting methods from string to basic framework types (int, bool, etc.).
     /// </summary>
-    public class StringToFrameworkStructsConverter : RawSettingsConverterBase
+    public class StringToFrameworkTypesConverter : RawSettingsConverterBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="StringToFrameworkStructsConverter"/> class.
+        /// Initializes a new instance of the <see cref="StringToFrameworkTypesConverter"/> class.
         /// </summary>
-        public StringToFrameworkStructsConverter()
+        public StringToFrameworkTypesConverter()
         {
             AddSupportForTypes(typeof(string), typeof(Guid), (rawValue, type) => System.Convert.ChangeType(new Guid((string)rawValue), typeof(Guid)));
             AddSupportForTypes(typeof(string), typeof(string), (rawValue, type) => rawValue);
@@ -29,6 +29,7 @@ namespace RapidSettings.Core
             AddSupportForTypes(typeof(string), typeof(ushort), (rawValue, type) => ushort.Parse((string)rawValue));
             AddSupportForTypes(typeof(string), typeof(DateTime), (rawValue, type) => DateTime.Parse((string)rawValue));
             AddSupportForTypes(typeof(string), typeof(DateTimeOffset), (rawValue, type) => DateTimeOffset.Parse((string)rawValue));
+            AddSupportForTypes(typeof(string), typeof(Uri), (rawValue, type) => new Uri((string)rawValue));
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Net.Mail;
 namespace RapidSettings.Converters
 {
     /// <summary>
-    /// Provides converting methods for commonly used (in settings) types: <see cref="Uri"/> and <see cref="MailAddress"/>.
+    /// Provides converting methods for commonly used (in settings) types: <see cref="MailAddress"/>.
     /// </summary>
     /// <remarks>
     /// String form of <see cref="MailAddress"/> should be like 'My Display Name#myemail@mail.com'.
@@ -18,11 +18,6 @@ namespace RapidSettings.Converters
         /// </summary>
         public StringToCommonlyUsedClassesConverter()
         {
-            AddSupportForTypes(typeof(string), typeof(Uri), (rawValue, type) =>
-               rawValue == null
-               ? throw new ArgumentNullException(nameof(rawValue))
-               : System.Convert.ChangeType(new Uri((string)rawValue), typeof(Uri))
-            );
             AddSupportForTypes(typeof(string), typeof(MailAddress), (rawValue, type) =>
                 rawValue == null
                 ? throw new ArgumentNullException(nameof(rawValue))

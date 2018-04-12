@@ -46,7 +46,7 @@ namespace RapidSettings.Tests.Attributes
 
         private SettingsFiller GetSettingsFiller()
         {
-            var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkStructsConverter() });
+            var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
             var rawSettingsProvider = new FromFuncProvider(key => key.ToString().Last().ToString());
             var settingsFiller = new SettingsFiller(converterChooser, rawSettingsProvider);
 

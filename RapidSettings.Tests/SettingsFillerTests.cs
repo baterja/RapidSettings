@@ -28,7 +28,7 @@ namespace RapidSettings.Tests.Attributes
         [ExpectedException(typeof(RapidSettingsException))]
         public void SettingsFillerTest_NoProvider()
         {
-            var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkStructsConverter() });
+            var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
           
             var settingsFiller = new SettingsFiller(converterChooser, (IRawSettingsProvider)null);
         }
@@ -37,7 +37,7 @@ namespace RapidSettings.Tests.Attributes
         [ExpectedException(typeof(RapidSettingsException))]
         public void SettingsFillerTest_NoProviders()
         {
-            var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkStructsConverter() });
+            var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
             var settingsFiller = new SettingsFiller(converterChooser, (IDictionary<string, IRawSettingsProvider>)null);
         }
 
@@ -90,7 +90,7 @@ namespace RapidSettings.Tests.Attributes
 
         private SettingsFiller GetBasicSettingsFiller()
         {
-            var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkStructsConverter() });
+            var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
             var rawSettingsProvider = new FromFuncProvider(key => key.ToString().Last().ToString());
             var settingsFiller = new SettingsFiller(converterChooser, rawSettingsProvider);
 
@@ -181,7 +181,7 @@ namespace RapidSettings.Tests.Attributes
 
         private SettingsFiller GetAdvancedSettingsFiller()
         {
-            var converterChooser = new SettingsConverterChooser(new IRawSettingsConverter[] { new StringToFrameworkStructsConverter(), new SuperConverter() });
+            var converterChooser = new SettingsConverterChooser(new IRawSettingsConverter[] { new StringToFrameworkTypesConverter(), new SuperConverter() });
             var funcSettingsProvider = new FromFuncProvider(key => new C());
             var envSettingsProvider = new FromEnvironmentProvider();
             var settingsFiller = new SettingsFiller(converterChooser, new Dictionary<string, IRawSettingsProvider> { { "func", funcSettingsProvider }, { "env", envSettingsProvider } });

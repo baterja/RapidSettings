@@ -14,11 +14,50 @@ And after that maybe...:
 - [ ] Make conversion optional when type of setting retrieved by Provider is assignable to type of target property (+ setting to turn it on/off),
 - [ ] Make retrieving raw setting values with Providers run in parallel if there are multiple Providers and they are async (+ setting to turn it on/off),
 
+# Purpose
+Ever used `ConfigurationManager.AppSettings["foo"]`, `Environment.GetEnvironmentVariable("bar");` or something like that? So you probably know that it can sometimes go out of control and spread through your project. Common method of keeping those settings tamed is creating some class and filling its properties in constructor like that:
+```csharp
+class SomeSettings
+{
+    public SomeSettings()
+    {
+        var host = ConfigurationManager.AppSettings[nameof(this.Host)];
+        this.Host = new Uri(host);
+
+        var port = ConfigurationManager.AppSettings[nameof(this.Port)];
+        this.Port = int.Parse(port);
+
+        this.TempFolderPath = Environment.GetEnvironmentVariable("TMP");
+    }
+
+    public Uri Host { get; }
+
+    public int Port { get; }
+
+    public string TempFolderPath { get; }
+}
+```
+This project exists to make it easier, reusable and more flexible.
+
+# Features
+TODO
 
 # Quickstart
 
 Working project with below examples is in RapidSettings.Examples (it's net45).
-Class with some properties to fill (at least private setters are required):
+The example shows basic scenario - there are some settings in app.config and another one as environment variable that should be retrieved and converted to some class properties.
+
+Assuming that you have a section in app.config:
+```xml
+<appSettings>
+    <add key="Host" value="http://nuget.org" />
+
+    <!-- Try uncommenting a value below and run an example again. -->
+    <add key="Port" value="1234" />
+</appSettings>
+```
+
+create a class with some properties to fill (at least private setters are required):
 
 ```csharp
 class SomeSettings

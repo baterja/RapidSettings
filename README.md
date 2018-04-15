@@ -51,8 +51,6 @@ Assuming that you have a section in app.config:
 ```xml
 <appSettings>
     <add key="Host" value="http://nuget.org" />
-
-    <!-- Try uncommenting a value below and run an example again. -->
     <add key="Port" value="1234" />
 </appSettings>
 ```

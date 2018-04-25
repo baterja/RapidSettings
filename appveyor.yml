@@ -1,0 +1,33 @@
+skip_non_tags: true
+image: Visual Studio 2017
+configuration: Release
+platform: Any CPU
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
+build_script:
+- ps: >-
+    if ($env:APPVEYOR_REPO_TAG -eq "true")
+
+    {
+        Update-AppveyorBuild -Version "$env:APPVEYOR_REPO_TAG_NAME"
+    }
+
+    dotnet build -c Release /p:SourceLinkCreate=true
+test_script:
+- cmd: dotnet test RapidSettings.Tests
+artifacts:
+- path: '**\*.nupkg'
+  name: RapidSettings NuGet
+deploy:
+- provider: NuGet
+  api_key:
+    secure: 7vaAtLLh0FkM2iJqSrD4lmqtYVL1RZzt1lqnZcqNoAObvi1uIFGEavIWyD2r5KAW
+  skip_symbols: true
+  on:
+    branch: master

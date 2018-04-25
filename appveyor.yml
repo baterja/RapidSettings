@@ -13,9 +13,12 @@ dotnet_csproj:
 install:
 - ps: >-
     if ($env:APPVEYOR_REPO_TAG -eq "true")
-
     {
         Update-AppveyorBuild -Version "$env:APPVEYOR_REPO_TAG_NAME"
+    }
+    else
+    {
+        throw "Build is not tagged!"
     }
 build_script:
 - cmd: dotnet build -c Release /p:SourceLinkCreate=true

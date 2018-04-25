@@ -3,11 +3,12 @@ Simple and extensible way to make web.config/app.config/env vars/whatever easier
 
 TODOs before I can name it 1.0 version:
 - [x] Test everything thoroughly,
-- [ ] Learn how to use AppVeyor to properly patch version numbers,
+- [x] Learn how to use AppVeyor to properly patch version numbers,
 - [x] Create some QuickStart or another tutorial,
 - [x] Organize namespaces because it's too many of them to do so few things,
 
 And after that maybe...:
+- [ ] List features on GitHub,
 - [ ] Create separate packages with more advanced Converters and Providers,
 - [ ] Make more specific exceptions (if someone expresses such a need),
 - [ ] Add another interface for Providers which will enable retrieving multiple raw values at once,
@@ -61,17 +62,16 @@ create a class with some properties to fill (at least private setters are requir
 class SomeSettings
 {
     public const string FromEnvironmentProviderName = "env";
-    public const string FromAppSettingsProviderName = "config";
 
-    // this setting will be retrieved by key Host (default) with provider named "config" 
+    // this setting will be retrieved by key Host (default) with default provider
     // and if its retrieval or conversion will be impossible, exception will be thrown
-    [ToFill(rawSettingsProviderName: FromAppSettingsProviderName)]
+    [ToFill]
     public Uri Host { get; private set; }
 
-    // this setting will be retrieved by key Port (default) with provider named "config" 
+    // this setting will be retrieved by key Port (default) with default provider
     // but if its retrieval or conversion will be impossible, in Port.Value will be just a default int value (0)
     // and in Port.Metadata there will be few informations about it
-    [ToFill(isRequired: false, rawSettingsProviderName: FromAppSettingsProviderName)]
+    [ToFill(isRequired: false)]
     public Setting<int> Port { get; private set; }
 
     // this setting will be retrieved by key TMP with provider named "env" 
@@ -88,10 +88,9 @@ and the filling part:
 
 var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
 var providersByNames = new Dictionary<string, IRawSettingsProvider> {
-    { SomeSettings.FromEnvironmentProviderName, new FromEnvironmentProvider() },
-    { SomeSettings.FromAppSettingsProviderName, new FromAppSettingsProvider() }
+    { SomeSettings.FromEnvironmentProviderName, new FromEnvironmentProvider() }
 };
-var settingsFiller = new SettingsFiller(converterChooser, providersByNames);
+var settingsFiller = new SettingsFiller(converterChooser, providersByNames, new FromAppSettingsProvider());
 
 var settings = settingsFiller.CreateWithSettings<SomeSettings>();
 ```

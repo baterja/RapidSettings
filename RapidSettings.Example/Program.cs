@@ -39,10 +39,9 @@ namespace RapidSettings.Example
         {
             var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
             var providersByNames = new Dictionary<string, IRawSettingsProvider> {
-                { SomeSettings.FromEnvironmentProviderName, new FromEnvironmentProvider() },
-                { SomeSettings.FromAppSettingsProviderName, new FromAppSettingsProvider() }
+                { SomeSettings.FromEnvironmentProviderName, new FromEnvironmentProvider() }
             };
-            var settingsFiller = new SettingsFiller(converterChooser, providersByNames);
+            var settingsFiller = new SettingsFiller(converterChooser, providersByNames, new FromAppSettingsProvider());
 
             return settingsFiller.CreateWithSettings<SomeSettings>();
         }

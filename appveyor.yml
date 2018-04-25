@@ -10,15 +10,15 @@ dotnet_csproj:
   assembly_version: '{version}'
   file_version: '{version}'
   informational_version: '{version}'
-build_script:
+install:
 - ps: >-
     if ($env:APPVEYOR_REPO_TAG -eq "true")
 
     {
         Update-AppveyorBuild -Version "$env:APPVEYOR_REPO_TAG_NAME"
     }
-
-    dotnet build -c Release /p:SourceLinkCreate=true
+build_script:
+- cmd: dotnet build -c Release /p:SourceLinkCreate=true
 test_script:
 - cmd: dotnet test RapidSettings.Tests
 artifacts:

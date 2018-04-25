@@ -137,13 +137,13 @@ namespace RapidSettings.Tests.Attributes
 
         private class AdvancedSettings
         {
-            [ToFill(rawSettingsProviderName: "func")]
+            [ToFill]
             public A SomeA { get; private set; }
 
-            [ToFill(rawSettingsProviderName: "func")]
+            [ToFill]
             public B SomeB { get; private set; }
 
-            [ToFill(rawSettingsProviderName: "func")]
+            [ToFill]
             public C SomeC { get; private set; }
 
             [ToFill(rawSettingsProviderName: "env")]
@@ -183,7 +183,7 @@ namespace RapidSettings.Tests.Attributes
             var converterChooser = new SettingsConverterChooser(new IRawSettingsConverter[] { new StringToFrameworkTypesConverter(), new SuperConverter() });
             var funcSettingsProvider = new FromFuncProvider(key => new C());
             var envSettingsProvider = new FromEnvironmentProvider();
-            var settingsFiller = new SettingsFiller(converterChooser, new Dictionary<string, IRawSettingsProvider> { { "func", funcSettingsProvider }, { "env", envSettingsProvider } });
+            var settingsFiller = new SettingsFiller(converterChooser, new Dictionary<string, IRawSettingsProvider> { { "func", funcSettingsProvider }, { "env", envSettingsProvider } }, funcSettingsProvider);
 
             return settingsFiller;
         }

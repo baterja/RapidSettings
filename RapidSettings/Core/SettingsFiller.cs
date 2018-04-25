@@ -12,6 +12,11 @@ namespace RapidSettings.Core
     public class SettingsFiller : ISettingsFillerSync, ISettingsFillerAsync
     {
         /// <summary>
+        /// Key which will should be used as key in <see cref="RawSettingsProvidersByNames"/> to register default provider.
+        /// </summary>
+        public string DefaultRawSettingsProviderKey => "###DEFAULT###";
+
+        /// <summary>
         /// Settings providers by their names.
         /// </summary>
         public IDictionary<string, IRawSettingsProvider> RawSettingsProvidersByNames { get; } = new Dictionary<string, IRawSettingsProvider>();
@@ -24,40 +29,44 @@ namespace RapidSettings.Core
         /// <summary>
         /// Initializes a new instance of <see cref="SettingsFiller"/> class with converter chooser and default raw settings provider.
         /// </summary>
-        public SettingsFiller(ISettingsConverterChooser settingsConverterChooser, IRawSettingsProvider defaultRawSettingsProvider)
-            : this(
-                  settingsConverterChooser,
-                  new Dictionary<string, IRawSettingsProvider> {
-                      { defaultRawSettingsProvider?.GetType().Name ?? throw new RapidSettingsException($"{nameof(defaultRawSettingsProvider)} cannot be null!"), defaultRawSettingsProvider }
-                  }
-            )
-        { }
+        public SettingsFiller(ISettingsConverterChooser settingsConverterChooser, IRawSettingsProvider defaultRawSettingsProvider) : this(settingsConverterChooser)
+        {
+            if (defaultRawSettingsProvider == null)
+            {
+                throw new RapidSettingsException($"{nameof(defaultRawSettingsProvider)} cannot be null!");
+            }
+
+            this.RawSettingsProvidersByNames.Add(this.DefaultRawSettingsProviderKey, defaultRawSettingsProvider);
+
+            this.CheckRequiredInterfaceImplementations();
+        }
 
         /// <summary>
-        /// Initializes a new instance of <see cref="SettingsFiller"/> class with converter chooser and some settings providers by their names.
+        /// Initializes a new instance of <see cref="SettingsFiller"/> class with converter chooser, some settings providers by their names and optionally a default <see cref="IRawSettingsProvider"/>.
         /// </summary>
-        public SettingsFiller(ISettingsConverterChooser settingsConverterChooser, IDictionary<string, IRawSettingsProvider> rawSettingsProvidersByNames)
+        public SettingsFiller(ISettingsConverterChooser settingsConverterChooser, IDictionary<string, IRawSettingsProvider> rawSettingsProvidersByNames, IRawSettingsProvider defaultRawSettingsProvider = null)
+            : this(settingsConverterChooser)
         {
             if (rawSettingsProvidersByNames == null || !rawSettingsProvidersByNames.Any())
             {
                 throw new RapidSettingsException($"{nameof(rawSettingsProvidersByNames)} cannot be null or empty!");
             }
 
-            var allSettingProvidersAreImplementingProperSubinterface = rawSettingsProvidersByNames.Values
-                .All(provider =>
-                    provider is IRawSettingsProviderSync
-                    || provider is IRawSettingsProviderAsync);
+            this.RawSettingsProvidersByNames = rawSettingsProvidersByNames;
 
-            if (!allSettingProvidersAreImplementingProperSubinterface)
+            if (defaultRawSettingsProvider != null)
             {
-                var providersWithoutNeededInterface = rawSettingsProvidersByNames.Values.Where(provider => !(provider is IRawSettingsProviderSync) || !(provider is IRawSettingsProviderAsync));
-                var typesOfProvidersWithoutNeededInterface = providersWithoutNeededInterface.Select(provider => provider.GetType().Name);
-                var exceptionMessage = $"Not every provider from {nameof(rawSettingsProvidersByNames)} is implementing proper interface ({nameof(IRawSettingsProviderSync)} or {nameof(IRawSettingsProviderAsync)})!";
-                exceptionMessage += $"Their types are: {string.Join(", ", typesOfProvidersWithoutNeededInterface)}";
-                throw new RapidSettingsException(exceptionMessage);
+                this.RawSettingsProvidersByNames.Add(this.DefaultRawSettingsProviderKey, defaultRawSettingsProvider);
             }
 
-            this.RawSettingsProvidersByNames = rawSettingsProvidersByNames;
+            this.CheckRequiredInterfaceImplementations();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="SettingsFiller"/> class with converter chooser. Instance constructed this way will be useless without some <see cref="RawSettingsProvidersByNames"/>.
+        /// </summary>
+        protected SettingsFiller(ISettingsConverterChooser settingsConverterChooser)
+        {
             this.SettingsConverterChooser = settingsConverterChooser ?? throw new RapidSettingsException($"{nameof(settingsConverterChooser)} cannot be null!");
         }
 
@@ -249,7 +258,14 @@ namespace RapidSettings.Core
         {
             if (string.IsNullOrEmpty(requestedRawSettingsProviderName))
             {
-                return this.RawSettingsProvidersByNames.Values.First();
+                if (!this.RawSettingsProvidersByNames.ContainsKey(this.DefaultRawSettingsProviderKey))
+                {
+                    var errorMessage = $"Cannot find default {nameof(IRawSettingsProvider)} by (default) key {this.DefaultRawSettingsProviderKey} within {nameof(this.RawSettingsProvidersByNames)}!";
+                    errorMessage += $" (for most cases you should use proper argument in constructor or you can manually add a provider with key {this.DefaultRawSettingsProviderKey} to {nameof(this.RawSettingsProvidersByNames)})";
+                    throw new RapidSettingsException(errorMessage);
+                }
+
+                return this.RawSettingsProvidersByNames[this.DefaultRawSettingsProviderKey];
             }
 
             if (!this.RawSettingsProvidersByNames.ContainsKey(requestedRawSettingsProviderName))
@@ -275,6 +291,26 @@ namespace RapidSettings.Core
         private Type GetWrappedType(Type propertyType)
         {
             return propertyType.GetGenericArguments().First();
+        }
+
+        /// <summary>
+        /// Checks if all of <see cref="RawSettingsProvidersByNames"/> are implementing either <see cref="IRawSettingsProviderSync"/> or <see cref="IRawSettingsProviderAsync"/>
+        /// and throws an exception if not.
+        /// </summary>
+        private void CheckRequiredInterfaceImplementations()
+        {
+            var allSettingProvidersAreImplementingProperSubinterface = this.RawSettingsProvidersByNames.Values
+                .All(provider =>
+                    provider is IRawSettingsProviderSync || provider is IRawSettingsProviderAsync);
+
+            if (!allSettingProvidersAreImplementingProperSubinterface)
+            {
+                var providersWithoutNeededInterface = this.RawSettingsProvidersByNames.Values.Where(provider => !(provider is IRawSettingsProviderSync) || !(provider is IRawSettingsProviderAsync));
+                var typesOfProvidersWithoutNeededInterface = providersWithoutNeededInterface.Select(provider => provider.GetType().Name);
+                var exceptionMessage = $"Not every {typeof(IRawSettingsProvider).Name} from {nameof(this.RawSettingsProvidersByNames)} is implementing proper interface ({nameof(IRawSettingsProviderSync)} or {nameof(IRawSettingsProviderAsync)})!";
+                exceptionMessage += $" Their types are: {string.Join(", ", typesOfProvidersWithoutNeededInterface)}";
+                throw new RapidSettingsException(exceptionMessage);
+            }
         }
     }
 }

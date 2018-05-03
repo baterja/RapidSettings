@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace RapidSettings.Core
 {
     /// <summary>
-    /// Fills props/fields decorated with <see cref="ToFillAttribute"/>.
+    /// Fills props decorated with <see cref="ToFillAttribute"/>.
     /// </summary>
     public class SettingsFiller : ISettingsFillerSync, ISettingsFillerAsync
     {

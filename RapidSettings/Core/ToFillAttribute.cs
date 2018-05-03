@@ -4,9 +4,9 @@ using System.Runtime.CompilerServices;
 namespace RapidSettings.Core
 {
     /// <summary>
-    /// Indicates that marked field or property should be filled by <see cref="ISettingsFiller"/>.
+    /// Indicates that marked property should be filled by <see cref="ISettingsFiller"/>.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
     public class ToFillAttribute : Attribute
     {
         /// <summary>

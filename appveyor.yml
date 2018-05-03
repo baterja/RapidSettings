@@ -1,5 +1,4 @@
 version: '0.0.0.{build}'
-skip_non_tags: true
 image: Visual Studio 2017
 configuration: Release
 platform: Any CPU
@@ -17,10 +16,6 @@ install:
     {
         Update-AppveyorBuild -Version "$env:APPVEYOR_REPO_TAG_NAME"
     }
-    else
-    {
-        throw "Build is not tagged!"
-    }
 build_script:
 - cmd: dotnet build -c Release /p:SourceLinkCreate=true
 test_script:
@@ -34,4 +29,4 @@ deploy:
     secure: 7vaAtLLh0FkM2iJqSrD4lmqtYVL1RZzt1lqnZcqNoAObvi1uIFGEavIWyD2r5KAW
   skip_symbols: true
   on:
-    branch: master
+    appveyor_repo_tag: true

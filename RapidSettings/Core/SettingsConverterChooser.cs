@@ -13,15 +13,15 @@ namespace RapidSettings.Core
         /// Initializes a new instance of the <see cref="SettingsConverterChooser"/> class with some <paramref name="converters"/>.
         /// </summary>
         /// <param name="converters">Initial list of converters to choose from.</param>
-        public SettingsConverterChooser(IList<IRawSettingsConverter> converters)
+        public SettingsConverterChooser(IEnumerable<IRawSettingsConverter> converters)
         {
-            this.Converters = converters ?? throw new RapidSettingsException($"{nameof(converters)} cannot be null!");
+            this.Converters = converters != null ? new List<IRawSettingsConverter>(converters) : throw new RapidSettingsException($"{nameof(converters)} cannot be null!");
         }
 
         /// <summary>
         /// Converters which will be used to convert raw values.
         /// </summary>
-        public IList<IRawSettingsConverter> Converters { get; } = new List<IRawSettingsConverter>();
+        public ICollection<IRawSettingsConverter> Converters { get; } = new List<IRawSettingsConverter>();
 
         /// <summary>
         /// Chooses converter which <see cref="IRawSettingsConverter.CanConvert(Type, Type)"/> from <typeparamref name="TFrom"/> to <typeparamref name="TTo"/> 

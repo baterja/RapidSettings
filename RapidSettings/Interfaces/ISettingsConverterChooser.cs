@@ -12,9 +12,9 @@ namespace RapidSettings.Core
         /// </summary>
         /// <remarks>
         /// If many converters declare support for some type, there is no guarantee which one will be used,
-        /// so please adjust your converters <see cref="IRawSettingsConverter.CanConvert(System.Type, System.Type)"/>.
+        /// so please adjust your converters' <see cref="IRawSettingsConverter.CanConvert(System.Type, System.Type)"/>.
         /// </remarks>
-        IList<IRawSettingsConverter> Converters { get; }
+        ICollection<IRawSettingsConverter> Converters { get; }
 
         /// <summary>
         /// Uses <see cref="Converters"/> to convert <paramref name="rawValue"/> from type <typeparamref name="TFrom"/> to type <typeparamref name="TTo"/>.

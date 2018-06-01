@@ -1,19 +1,18 @@
-# RapidSettings [![Build status](https://ci.appveyor.com/api/projects/status/1r2o5w4tsg11fatf/branch/master?svg=true)](https://ci.appveyor.com/project/baterja/rapidsettings/branch/master)
+# RapidSettings [![Build status](https://ci.appveyor.com/api/projects/status/1r2o5w4tsg11fatf/branch/master?svg=true)](https://ci.appveyor.com/project/baterja/rapidsettings/branch/master) [![NuGet](https://img.shields.io/nuget/vpre/RapidSettings.svg)](https://www.nuget.org/packages/RapidSettings/)
 Simple and extensible way to make web.config/app.config/env vars/whatever easier to read and strongly typed!
 
-TODOs before I can name it 1.0 version:
+TODOs:
 - [x] Test everything thoroughly,
 - [x] Learn how to use AppVeyor to properly patch version numbers,
 - [x] Create some QuickStart or another tutorial,
 - [x] Organize namespaces because it's too many of them to do so few things,
-
-And after that maybe...:
-- [ ] List features on GitHub,
+- [x] List features on GitHub,
 - [ ] Create separate packages with more advanced Converters and Providers,
 - [ ] Make more specific exceptions (if someone expresses such a need),
 - [ ] Add another interface for Providers which will enable retrieving multiple raw values at once,
 - [ ] Make conversion optional when type of setting retrieved by Provider is assignable to type of target property (+ setting to turn it on/off),
 - [ ] Make retrieving raw setting values with Providers run in parallel if there are multiple Providers and they are async (+ setting to turn it on/off),
+- [ ] Add Converters chaining to ```ISettingsConverterChooser``` (if there is converter which converts from ```A``` to ```B``` and the other one converts from ```B``` to ```C``` then conversion from ```A``` to ```C``` should be possible)
 
 # Purpose
 Ever used `ConfigurationManager.AppSettings["foo"]`, `Environment.GetEnvironmentVariable("bar");` or something like that? So you probably know that it can sometimes go out of control and spread through your project. Common method of keeping those settings tamed is creating some class and filling its properties in constructor like that:
@@ -39,9 +38,6 @@ class SomeSettings
 }
 ```
 This project exists to make it easier, reusable and more flexible.
-
-# Features
-TODO
 
 # Quickstart
 
@@ -94,3 +90,45 @@ var settingsFiller = new SettingsFiller(converterChooser, providersByNames, new 
 
 var settings = settingsFiller.CreateWithSettings<SomeSettings>();
 ```
+
+# Features
+Those are the steps which are usally performed by this library:
+- you prepare Providers, Converters, ConverterChooser and SettingsFiller and use it on some class with properties decorated with ```ToFill``` attribute,
+- properties decorated with ```ToFill``` attribute are collected and for each of them:
+  - setting is retrieved by ```string``` key by ```IRawSettingsProvider``` or ```IRawSettingsProviderAsync``` which has been chosen by attribute's property of is default,
+  - target type of conversion is determined (unwrapping ```Nullable<>``` and ```Setting<>```),
+  - converter is chosen by and used by ```SettingsConverterChooser```,
+  - (optional) if setting is wrapped in ```Setting<>```, ```SettingMetadata``` are created,
+  - result of conversion is assigned to target property.
+
+And this is how you can adjust specific steps to your needs:
+
+### Decorating properties with ```ToFillAttribute```
+There you can set 3 things:
+- ```key``` by which raw value of setting will be retrieved. By default it's the name of decorated property, 
+- ```isRequired``` - if ```true``` exception will be thrown if retrieval/conversion of the setting fails. If setting is not required, it will then be ```default``` for its type,
+- ```rawSettingsProviderName``` - there you choose which provider should be used to retrieve raw value of property. If null, default provider will be used.
+
+### Retrieval
+Settings in "raw" form are provided in sync or async way by ```IRawSettingsProvider``` or ```IRawSettingsProviderAsync``` with method ```GetRawSetting``` (or its ```async``` version) taking ```string``` key as parameter and returning some ```object```. Implementations of those interfaces provided by library are:
+- ```FromAppSettingsProvider``` which uses ```ConfigurationManager.AppSettings.Get()```,
+- ```FromEnvironmentProvider``` which uses ```Environment.GetEnvironmentVariable()```,
+- ```FromFuncProvider``` - parameterizable provider which is just using ```Invoke()``` on ```Func<string, object>``` which it get in constructor,
+- ```FromTaskFuncProvider``` - parameterizable provider which is using ```Invoke()``` on ```Func<string, Task<object>>``` to get ```Task<>``` which will provide raw form of setting.
+
+And of course you can add your own by implementing ```IRawSettingsProvider``` or ```IRawSettingsProviderAsync```.
+
+### Choosing converter
+```ISettingsConverterChooser``` is responsible by choosing which converter to use given source and target type of conversion. Default implementation ```SettingsConverterChooser``` is just selecting first Converter which ```CanConvert``` from source to target type. If you need more advanced way of choosing Converters you can implement ```ISettingsConverterChooser``` by yourself.
+
+### Conversion
+You create converters (```IRawSettingsConverter```s) which will be used to convert settings from something to desired type. Currently there is one provided with RapidSettings - ```StringToFrameworkTypesConverter``` which handles conversion from ```string``` to following types:
+- all framework's numeric types (```int```, ```decimal```, ```double```...)
+- ```string```
+- ```Guid```
+- ```bool```
+- ```DateTime```
+- ```DateTimeOffset```
+- ```Uri```
+
+You can add new converters by implementing ```IRawSettingsConverter```. Or just inherit ```StringToFrameworkTypesConverter``` and adjust it to your needs. There's ```RawSettingsConverterBase``` abstract class which you can inherit if you want your own implementation to be easier. Beside of implementing ```IRawSettingsConverter``` it provides ```AddSupportForTypes()``` method which allow simple adding converting functions to your converter. It also handles variance of types.

@@ -14,6 +14,16 @@ TODOs:
 - [ ] Make retrieving raw setting values with Providers run in parallel if there are multiple Providers and they are async (+ setting to turn it on/off),
 - [ ] Add Converters chaining to ```ISettingsConverterChooser``` (if there is converter which converts from ```A``` to ```B``` and the other one converts from ```B``` to ```C``` then conversion from ```A``` to ```C``` should be possible)
 
+# Table of contents
+1. [Purpose](#Purpose)
+2. [Quickstart](#Quickstart)
+3. [Features](#Features)
+   1. [Decorating properties with ```ToFillAttribute```](#ToFillAttribute)
+   2. [Retrieval](#Retrieval)
+   3. [Choosing converter](#ChoosingConverter)
+   4. [Conversion](#Conversion)
+
+<a name="Purpose"></a>
 # Purpose
 Ever used `ConfigurationManager.AppSettings["foo"]`, `Environment.GetEnvironmentVariable("bar");` or something like that? So you probably know that it can sometimes go out of control and spread through your project. Common method of keeping those settings tamed is creating some class and filling its properties in constructor like that:
 ```csharp
@@ -39,6 +49,7 @@ class SomeSettings
 ```
 This project exists to make it easier, reusable and more flexible.
 
+<a name="Quickstart"></a>
 # Quickstart
 
 Working project with below examples is in RapidSettings.Examples (it's net45).
@@ -91,6 +102,7 @@ var settingsFiller = new SettingsFiller(converterChooser, providersByNames, new 
 var settings = settingsFiller.CreateWithSettings<SomeSettings>();
 ```
 
+<a name="Features"></a>
 # Features
 Those are the steps which are usally performed by this library:
 - you prepare Providers, Converters, ConverterChooser and SettingsFiller and use it on some class with properties decorated with ```ToFill``` attribute,
@@ -103,12 +115,14 @@ Those are the steps which are usally performed by this library:
 
 And this is how you can adjust specific steps to your needs:
 
+<a name="ToFillAttribute"></a>
 ### Decorating properties with ```ToFillAttribute```
 There you can set 3 things:
 - ```key``` by which raw value of setting will be retrieved. By default it's the name of decorated property, 
 - ```isRequired``` - if ```true``` exception will be thrown if retrieval/conversion of the setting fails. If setting is not required, it will then be ```default``` for its type,
 - ```rawSettingsProviderName``` - there you choose which provider should be used to retrieve raw value of property. If null, default provider will be used.
 
+<a name="Retrieval"></a>
 ### Retrieval
 Settings in "raw" form are provided in sync or async way by ```IRawSettingsProvider``` or ```IRawSettingsProviderAsync``` with method ```GetRawSetting``` (or its ```async``` version) taking ```string``` key as parameter and returning some ```object```. Implementations of those interfaces provided by library are:
 - ```FromAppSettingsProvider``` which uses ```ConfigurationManager.AppSettings.Get()```,
@@ -118,9 +132,11 @@ Settings in "raw" form are provided in sync or async way by ```IRawSettingsProvi
 
 And of course you can add your own by implementing ```IRawSettingsProvider``` or ```IRawSettingsProviderAsync```.
 
+<a name="ChoosingConverter"></a>
 ### Choosing converter
 ```ISettingsConverterChooser``` is responsible by choosing which converter to use given source and target type of conversion. Default implementation ```SettingsConverterChooser``` is just selecting first Converter which ```CanConvert``` from source to target type. If you need more advanced way of choosing Converters you can implement ```ISettingsConverterChooser``` by yourself.
 
+<a name="Conversion"></a>
 ### Conversion
 You create converters (```IRawSettingsConverter```s) which will be used to convert settings from something to desired type. Currently there is one provided with RapidSettings - ```StringToFrameworkTypesConverter``` which handles conversion from ```string``` to following types:
 - all framework's numeric types (```int```, ```decimal```, ```double```...)

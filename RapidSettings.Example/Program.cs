@@ -1,6 +1,5 @@
 ﻿using RapidSettings.Core;
 using System;
-using System.Collections.Generic;
 
 namespace RapidSettings.Example
 {
@@ -37,11 +36,7 @@ namespace RapidSettings.Example
 
         private static SomeSettings GetSettings()
         {
-            var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
-            var providersByNames = new Dictionary<string, IRawSettingsProvider> {
-                { SomeSettings.FromEnvironmentProviderName, new FromEnvironmentProvider() }
-            };
-            var settingsFiller = new SettingsFiller(converterChooser, providersByNames, new FromAppSettingsProvider());
+            var settingsFiller = new SettingsFiller();
 
             return settingsFiller.CreateWithSettings<SomeSettings>();
         }

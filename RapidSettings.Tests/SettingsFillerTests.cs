@@ -24,12 +24,12 @@ namespace RapidSettings.Tests.Attributes
         }
 
         [TestMethod]
-        [ExpectedException(typeof(RapidSettingsException))]
         public void SettingsFillerTest_NoProvider()
         {
             var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
-          
             var settingsFiller = new SettingsFiller(converterChooser, (IRawSettingsProvider)null);
+
+            Assert.AreEqual(SettingsFillerStaticDefaults.DefaultRawSettingsProviders, settingsFiller.RawSettingsProvidersByNames);
         }
 
         [TestMethod]
@@ -41,11 +41,12 @@ namespace RapidSettings.Tests.Attributes
         }
 
         [TestMethod]
-        [ExpectedException(typeof(RapidSettingsException))]
         public void SettingsFillerTest_NoChooser()
         {
             var rawSettingsProvider = new FromFuncProvider(key => key.ToString().Last().ToString());
             var settingsFiller = new SettingsFiller(null, rawSettingsProvider);
+
+            Assert.AreEqual(SettingsFillerStaticDefaults.DefaultSettingsConverterChooser, settingsFiller.SettingsConverterChooser);
         }
 
         [TestMethod]

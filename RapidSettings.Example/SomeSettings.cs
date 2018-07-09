@@ -5,8 +5,6 @@ namespace RapidSettings.Example
 {
     class SomeSettings
     {
-        public const string FromEnvironmentProviderName = "env";
-
         // this setting will be retrieved by key Host (default) with default provider
         // and if its retrieval or conversion will be impossible, exception will be thrown
         [ToFill]
@@ -18,9 +16,10 @@ namespace RapidSettings.Example
         [ToFill(isRequired: false)]
         public Setting<int> Port { get; private set; }
 
-        // this setting will be retrieved by key TMP with provider named "env" 
+        // this setting will be retrieved by key TMP with provider named ENV 
+        // (which is the default key of FromEnvironmentProvider taken from SettingsFillerStaticDefaults)
         // but if its retrieval or conversion will be impossible, it will be just a default string value (null)
-        [ToFill("TMP", isRequired: false, rawSettingsProviderName: FromEnvironmentProviderName)]
+        [ToFill("TMP", isRequired: false, rawSettingsProviderName: SettingsFillerStaticDefaults.FromEnvironmentProviderKey)]
         public string TempFolderPath { get; private set; }
     }
 }

@@ -14,12 +14,12 @@ namespace RapidSettings.Core
         /// <summary>
         /// Key which will should be used as key in <see cref="RawSettingsProvidersByNames"/> to register default provider.
         /// </summary>
-        public string DefaultRawSettingsProviderKey => "###DEFAULT###";
+        public const string DefaultRawSettingsProviderKey = "###DEFAULT###";
 
         /// <summary>
         /// Settings providers by their names.
         /// </summary>
-        public IDictionary<string, IRawSettingsProvider> RawSettingsProvidersByNames { get; } = new Dictionary<string, IRawSettingsProvider>();
+        public IDictionary<string, IRawSettingsProvider> RawSettingsProvidersByNames { get; }
 
         /// <summary>
         /// Converter chooser which will be used to choose converters which will be used for conversion ~ capt. Obvious.
@@ -27,26 +27,22 @@ namespace RapidSettings.Core
         public ISettingsConverterChooser SettingsConverterChooser { get; }
 
         /// <summary>
-        /// Initializes a new instance of <see cref="SettingsFiller"/> class with converter chooser and default raw settings provider.
+        /// Initializes a new instance of <see cref="SettingsFiller"/> class with converter chooser and default raw settings provider. Any parameter left with null will default to values from <see cref="SettingsFillerStaticDefaults"/>.
         /// </summary>
-        public SettingsFiller(ISettingsConverterChooser settingsConverterChooser, IRawSettingsProvider defaultRawSettingsProvider) : this(settingsConverterChooser)
-        {
-            if (defaultRawSettingsProvider == null)
-            {
-                throw new RapidSettingsException($"{nameof(defaultRawSettingsProvider)} cannot be null!");
-            }
-
-            this.RawSettingsProvidersByNames.Add(this.DefaultRawSettingsProviderKey, defaultRawSettingsProvider);
-
-            this.CheckRequiredInterfaceImplementations();
-        }
+        public SettingsFiller(ISettingsConverterChooser settingsConverterChooser = null, IRawSettingsProvider defaultRawSettingsProvider = null)
+            : this(
+                  settingsConverterChooser ?? SettingsFillerStaticDefaults.DefaultSettingsConverterChooser,
+                  defaultRawSettingsProvider == null ? SettingsFillerStaticDefaults.DefaultRawSettingsProviders : new Dictionary<string, IRawSettingsProvider> { { DefaultRawSettingsProviderKey, defaultRawSettingsProvider } }
+              )
+        { }
 
         /// <summary>
         /// Initializes a new instance of <see cref="SettingsFiller"/> class with converter chooser, some settings providers by their names and optionally a default <see cref="IRawSettingsProvider"/>.
         /// </summary>
         public SettingsFiller(ISettingsConverterChooser settingsConverterChooser, IDictionary<string, IRawSettingsProvider> rawSettingsProvidersByNames, IRawSettingsProvider defaultRawSettingsProvider = null)
-            : this(settingsConverterChooser)
         {
+            this.SettingsConverterChooser = settingsConverterChooser ?? throw new RapidSettingsException($"{nameof(settingsConverterChooser)} cannot be null!");
+
             if (rawSettingsProvidersByNames == null || !rawSettingsProvidersByNames.Any())
             {
                 throw new RapidSettingsException($"{nameof(rawSettingsProvidersByNames)} cannot be null or empty!");
@@ -56,18 +52,10 @@ namespace RapidSettings.Core
 
             if (defaultRawSettingsProvider != null)
             {
-                this.RawSettingsProvidersByNames.Add(this.DefaultRawSettingsProviderKey, defaultRawSettingsProvider);
+                this.RawSettingsProvidersByNames.Add(DefaultRawSettingsProviderKey, defaultRawSettingsProvider);
             }
 
             this.CheckRequiredInterfaceImplementations();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of <see cref="SettingsFiller"/> class with converter chooser. Instance constructed this way will be useless without some <see cref="RawSettingsProvidersByNames"/>.
-        /// </summary>
-        protected SettingsFiller(ISettingsConverterChooser settingsConverterChooser)
-        {
-            this.SettingsConverterChooser = settingsConverterChooser ?? throw new RapidSettingsException($"{nameof(settingsConverterChooser)} cannot be null!");
         }
 
         /// <summary>
@@ -258,14 +246,14 @@ namespace RapidSettings.Core
         {
             if (string.IsNullOrEmpty(requestedRawSettingsProviderName))
             {
-                if (!this.RawSettingsProvidersByNames.ContainsKey(this.DefaultRawSettingsProviderKey))
+                if (!this.RawSettingsProvidersByNames.ContainsKey(DefaultRawSettingsProviderKey))
                 {
-                    var errorMessage = $"Cannot find default {nameof(IRawSettingsProvider)} by (default) key {this.DefaultRawSettingsProviderKey} within {nameof(this.RawSettingsProvidersByNames)}!";
-                    errorMessage += $" (for most cases you should use proper argument in constructor or you can manually add a provider with key {this.DefaultRawSettingsProviderKey} to {nameof(this.RawSettingsProvidersByNames)})";
+                    var errorMessage = $"Cannot find default {nameof(IRawSettingsProvider)} by (default) key {DefaultRawSettingsProviderKey} within {nameof(this.RawSettingsProvidersByNames)}!";
+                    errorMessage += $" (for most cases you should use proper argument in constructor or you can manually add a provider with key {DefaultRawSettingsProviderKey} to {nameof(this.RawSettingsProvidersByNames)})";
                     throw new RapidSettingsException(errorMessage);
                 }
 
-                return this.RawSettingsProvidersByNames[this.DefaultRawSettingsProviderKey];
+                return this.RawSettingsProvidersByNames[DefaultRawSettingsProviderKey];
             }
 
             if (!this.RawSettingsProvidersByNames.ContainsKey(requestedRawSettingsProviderName))

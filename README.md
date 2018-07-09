@@ -68,8 +68,6 @@ create a class with some properties to fill (at least private setters are requir
 ```csharp
 class SomeSettings
 {
-    public const string FromEnvironmentProviderName = "env";
-
     // this setting will be retrieved by key Host (default) with default provider
     // and if its retrieval or conversion will be impossible, exception will be thrown
     [ToFill]
@@ -81,9 +79,10 @@ class SomeSettings
     [ToFill(isRequired: false)]
     public Setting<int> Port { get; private set; }
 
-    // this setting will be retrieved by key TMP with provider named "env" 
+    // this setting will be retrieved by key TMP with provider named ENV 
+    // (which is the default key of FromEnvironmentProvider taken from SettingsFillerStaticDefaults)
     // but if its retrieval or conversion will be impossible, it will be just a default string value (null)
-    [ToFill("TMP", isRequired: false, rawSettingsProviderName: FromEnvironmentProviderName)]
+    [ToFill("TMP", isRequired: false, rawSettingsProviderName: SettingsFillerStaticDefaults.FromEnvironmentProviderKey)]
     public string TempFolderPath { get; private set; }
 }
 ```
@@ -93,11 +92,7 @@ and the filling part:
 ```csharp
 (using RapidSettings.Core;)
 
-var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
-var providersByNames = new Dictionary<string, IRawSettingsProvider> {
-    { SomeSettings.FromEnvironmentProviderName, new FromEnvironmentProvider() }
-};
-var settingsFiller = new SettingsFiller(converterChooser, providersByNames, new FromAppSettingsProvider());
+var settingsFiller = new SettingsFiller();
 
 var settings = settingsFiller.CreateWithSettings<SomeSettings>();
 ```

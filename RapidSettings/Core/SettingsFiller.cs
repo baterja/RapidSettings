@@ -32,7 +32,8 @@ namespace RapidSettings.Core
         public SettingsFiller(ISettingsConverterChooser settingsConverterChooser = null, IRawSettingsProvider defaultRawSettingsProvider = null)
             : this(
                   settingsConverterChooser ?? SettingsFillerStaticDefaults.DefaultSettingsConverterChooser,
-                  defaultRawSettingsProvider == null ? SettingsFillerStaticDefaults.DefaultRawSettingsProviders : new Dictionary<string, IRawSettingsProvider> { { DefaultRawSettingsProviderKey, defaultRawSettingsProvider } }
+                  defaultRawSettingsProvider == null ? SettingsFillerStaticDefaults.DefaultRawSettingsProviders : new Dictionary<string, IRawSettingsProvider> { { DefaultRawSettingsProviderKey, defaultRawSettingsProvider } },
+                  defaultRawSettingsProvider ?? SettingsFillerStaticDefaults.DefaultDefaultRawSettingsProvider
               )
         { }
 
@@ -52,7 +53,7 @@ namespace RapidSettings.Core
 
             if (defaultRawSettingsProvider != null)
             {
-                this.RawSettingsProvidersByNames.Add(DefaultRawSettingsProviderKey, defaultRawSettingsProvider);
+                this.RawSettingsProvidersByNames[DefaultRawSettingsProviderKey] = defaultRawSettingsProvider;
             }
 
             this.CheckRequiredInterfaceImplementations();

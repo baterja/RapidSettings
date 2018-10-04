@@ -29,7 +29,11 @@ namespace RapidSettings.Tests.Attributes
             var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
             var settingsFiller = new SettingsFiller(converterChooser, (IRawSettingsProvider)null);
 
-            Assert.AreEqual(SettingsFillerStaticDefaults.DefaultRawSettingsProviders, settingsFiller.RawSettingsProvidersByNames);
+            foreach (var settingsProviderWithKey in SettingsFillerStaticDefaults.DefaultRawSettingsProviders)
+            {
+                Assert.IsTrue(settingsFiller.RawSettingsProvidersByNames.ContainsKey(settingsProviderWithKey.Key));
+                Assert.AreEqual(settingsFiller.RawSettingsProvidersByNames[settingsProviderWithKey.Key], settingsProviderWithKey.Value);
+            }
         }
 
         [TestMethod]

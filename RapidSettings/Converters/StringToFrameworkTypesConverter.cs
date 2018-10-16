@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace RapidSettings.Core
 {
@@ -30,6 +31,8 @@ namespace RapidSettings.Core
             AddSupportForTypes(typeof(string), typeof(DateTime), (rawValue, type) => DateTime.Parse((string)rawValue));
             AddSupportForTypes(typeof(string), typeof(DateTimeOffset), (rawValue, type) => DateTimeOffset.Parse((string)rawValue));
             AddSupportForTypes(typeof(string), typeof(Uri), (rawValue, type) => new Uri((string)rawValue));
+            AddSupportForTypes(typeof(string), typeof(DirectoryInfo), (rawValue, type) => new DirectoryInfo((string)rawValue));
+            AddSupportForTypes(typeof(string), typeof(FileInfo), (rawValue, type) => new FileInfo((string)rawValue));
         }
     }
 }

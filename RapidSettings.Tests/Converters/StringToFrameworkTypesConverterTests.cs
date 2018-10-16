@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RapidSettings.Core;
 using System;
+using System.IO;
 using System.Linq;
 
 namespace RapidSettings.Tests.Converters
@@ -101,6 +102,12 @@ namespace RapidSettings.Tests.Converters
 
             [ToFill]
             public Uri SomeUri { get; private set; }
+
+            [ToFill]
+            public DirectoryInfo SomeDirectoryInfo { get; private set; }
+
+            [ToFill]
+            public FileInfo SomeFileInfo { get; private set; }
         }
 
         [TestMethod]
@@ -123,6 +130,10 @@ namespace RapidSettings.Tests.Converters
                         return "2000-01-01";
                     case string x when x.EndsWith(typeof(Uri).Name, StringComparison.InvariantCultureIgnoreCase):
                         return "https://nuget.org";
+                    case string x when x.EndsWith(typeof(DirectoryInfo).Name, StringComparison.InvariantCultureIgnoreCase):
+                        return "D:\\SomeFolder";
+                    case string x when x.EndsWith(typeof(FileInfo).Name, StringComparison.InvariantCultureIgnoreCase):
+                        return "filename.txt";
                     default:
                         throw new ArgumentOutOfRangeException($"{nameof(key)} with value {key} is out of range of handled keys!");
                 }
@@ -138,6 +149,8 @@ namespace RapidSettings.Tests.Converters
             Assert.AreEqual(DateTime.Parse("2000-01-01"), settings.SomeDateTime);
             Assert.AreEqual(DateTimeOffset.Parse("2000-01-01"), settings.SomeDateTimeOffset);
             Assert.AreEqual(new Uri("https://nuget.org"), settings.SomeUri);
+            Assert.AreEqual(new DirectoryInfo("D:\\SomeFolder").FullName, settings.SomeDirectoryInfo.FullName);
+            Assert.AreEqual(new FileInfo("filename.txt").FullName, settings.SomeFileInfo.FullName);
         }
 
         private SettingsFiller GetSettingsFiller()

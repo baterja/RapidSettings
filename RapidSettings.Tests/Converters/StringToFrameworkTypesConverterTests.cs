@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RapidSettings.Core;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
@@ -95,6 +96,9 @@ namespace RapidSettings.Tests.Converters
             public string SomeString { get; private set; }
 
             [ToFill]
+            public TimeSpan SomeTimeSpan { get; private set; }
+
+            [ToFill]
             public DateTime SomeDateTime { get; private set; }
 
             [ToFill]
@@ -124,6 +128,8 @@ namespace RapidSettings.Tests.Converters
                         return bool.TrueString;
                     case string x when x.EndsWith(typeof(string).Name, StringComparison.InvariantCultureIgnoreCase):
                         return "asdf";
+                    case string x when x.EndsWith(typeof(TimeSpan).Name, StringComparison.InvariantCultureIgnoreCase):
+                        return "12:13:14";
                     case string x when x.EndsWith(typeof(DateTime).Name, StringComparison.InvariantCultureIgnoreCase):
                         return "2000-01-01";
                     case string x when x.EndsWith(typeof(DateTimeOffset).Name, StringComparison.InvariantCultureIgnoreCase):
@@ -146,11 +152,28 @@ namespace RapidSettings.Tests.Converters
             Assert.AreEqual(true, settings.SomeBoolean);
             Assert.IsTrue(default(Guid) != settings.SomeGuid);
             Assert.AreEqual("asdf", settings.SomeString);
-            Assert.AreEqual(DateTime.Parse("2000-01-01"), settings.SomeDateTime);
-            Assert.AreEqual(DateTimeOffset.Parse("2000-01-01"), settings.SomeDateTimeOffset);
+            Assert.AreEqual(TimeSpan.Parse("12:13:14", CultureInfo.InvariantCulture), settings.SomeTimeSpan);
+            Assert.AreEqual(DateTime.Parse("2000-01-01", CultureInfo.InvariantCulture), settings.SomeDateTime);
+            Assert.AreEqual(DateTimeOffset.Parse("2000-01-01", CultureInfo.InvariantCulture), settings.SomeDateTimeOffset);
             Assert.AreEqual(new Uri("https://nuget.org"), settings.SomeUri);
             Assert.AreEqual(new DirectoryInfo("D:\\SomeFolder").FullName, settings.SomeDirectoryInfo.FullName);
             Assert.AreEqual(new FileInfo("filename.txt").FullName, settings.SomeFileInfo.FullName);
+        }
+
+        private class NonInvariantDoubleSettings
+        {
+            [ToFill]
+            public double Double1 { get; private set; }
+        }
+
+        [TestMethod]
+        public void NotInvariantCultureTest()
+        {
+            var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
+            var rawSettingsProvider = new FromFuncProvider(_ => "1 000,1");
+            var settingsFiller = new SettingsFiller(converterChooser, rawSettingsProvider);
+
+            Assert.ThrowsException<RapidSettingsException>(() => settingsFiller.CreateWithSettings<NonInvariantDoubleSettings>());
         }
 
         private SettingsFiller GetSettingsFiller()

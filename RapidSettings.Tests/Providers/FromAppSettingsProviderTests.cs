@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RapidSettings.Core;
 
-namespace RapidSettings.Tests.Converters
+namespace RapidSettings.Tests.Providers
 {
     [TestClass]
     public class FromAppSettingsProviderTests

@@ -2,7 +2,7 @@
 using RapidSettings.Core;
 using System.Threading.Tasks;
 
-namespace RapidSettings.Tests.Converters
+namespace RapidSettings.Tests.Providers
 {
     [TestClass]
     public class FromTaskFuncProviderTests

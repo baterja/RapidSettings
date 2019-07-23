@@ -2,7 +2,7 @@
 using RapidSettings.Core;
 using System;
 
-namespace RapidSettings.Tests.Converters
+namespace RapidSettings.Tests.Providers
 {
     [TestClass]
     public class FromEnvironmentProviderTests

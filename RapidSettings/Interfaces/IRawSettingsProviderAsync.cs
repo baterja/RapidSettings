@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-
-namespace RapidSettings.Core
+﻿namespace RapidSettings.Core
 {
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Gets raw values of settings with awaitable <see cref="Task"/>.
     /// </summary>

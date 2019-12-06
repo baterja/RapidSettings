@@ -1,8 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RapidSettings.Core;
-
-namespace RapidSettings.Tests.Providers
+﻿namespace RapidSettings.Tests.Providers
 {
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using RapidSettings.Core;
+
     [TestClass]
     public class FromFuncProviderTests
     {

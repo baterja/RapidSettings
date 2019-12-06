@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace RapidSettings.Core
+﻿namespace RapidSettings.Core
 {
+    using System;
+
     /// <summary>
     /// Should <see cref="Convert{TFrom, TTo}(TFrom)"/> types which it declares that it <see cref="CanConvert(Type, Type)"/>.
     /// </summary>

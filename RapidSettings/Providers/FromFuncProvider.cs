@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace RapidSettings.Core
+﻿namespace RapidSettings.Core
 {
+    using System;
+
     /// <summary>
     /// Customizable settings provider which provides its value by a func.
     /// </summary>

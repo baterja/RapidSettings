@@ -1,7 +1,7 @@
-﻿using System.Configuration;
-
-namespace RapidSettings.Core
+﻿namespace RapidSettings.Core
 {
+    using System.Configuration;
+
     /// <summary>
     /// Provides raw setting value from app.config/web.config.
     /// </summary>

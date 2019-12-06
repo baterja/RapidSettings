@@ -9,18 +9,18 @@ namespace RapidSettings.Core
     public class FromIConfigurationProvider : IRawSettingsProviderSync
     {
         /// <summary>
-        /// Source <see cref="IConfiguration"/> of this provider's instance.
-        /// </summary>
-        public IConfiguration Configuration { get; }
-
-        /// <summary>
         /// Initializes a new instance of <see cref="FromIConfigurationProvider"/> class.
         /// </summary>
         /// <param name="configuration"><see cref="IConfiguration"/> which will be used as a source of raw values by <see cref="GetRawSetting(string)"/>.</param>
         public FromIConfigurationProvider(IConfiguration configuration)
         {
-            this.Configuration = configuration ?? throw new RapidSettingsException($"{nameof(configuration)} cannot be null or empty!"); ;
+            this.Configuration = configuration ?? throw new RapidSettingsException($"{nameof(configuration)} cannot be null or empty!");
         }
+
+        /// <summary>
+        /// Source <see cref="IConfiguration"/> of this provider's instance.
+        /// </summary>
+        public IConfiguration Configuration { get; }
 
         /// <summary>
         /// Gets raw setting value from <see cref="Configuration"/> by given string <paramref name="key"/>.

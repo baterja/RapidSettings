@@ -1,16 +1,20 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RapidSettings.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace RapidSettings.Tests.Attributes
+﻿namespace RapidSettings.Tests.Attributes
 {
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using RapidSettings.Core;
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
+    using System.Linq;
+    using System.Threading.Tasks;
+
     [TestClass]
     public class SettingsFillerTests
     {
         #region Basics
+
+        [SuppressMessage("Design", "RCS1170:Use read-only auto-implemented property.", Justification = "Used by SettingsFiller")]
         private class BasicSettings
         {
             [ToFill]
@@ -27,7 +31,7 @@ namespace RapidSettings.Tests.Attributes
         public void SettingsFillerTest_NoProvider()
         {
             var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
-            var settingsFiller = new SettingsFiller(converterChooser, (IRawSettingsProvider)null);
+            var settingsFiller = new SettingsFiller(converterChooser, null);
 
             foreach (var settingsProviderWithKey in SettingsFillerStaticDefaults.DefaultRawSettingsProviders)
             {
@@ -47,7 +51,7 @@ namespace RapidSettings.Tests.Attributes
         [TestMethod]
         public void SettingsFillerTest_NoChooser()
         {
-            var rawSettingsProvider = new FromFuncProvider(key => key.ToString().Last().ToString());
+            var rawSettingsProvider = new FromFuncProvider(key => key.Last().ToString(CultureInfo.InvariantCulture));
             var settingsFiller = new SettingsFiller(null, rawSettingsProvider);
 
             Assert.AreEqual(SettingsFillerStaticDefaults.DefaultSettingsConverterChooser, settingsFiller.SettingsConverterChooser);
@@ -62,7 +66,7 @@ namespace RapidSettings.Tests.Attributes
 
             Assert.AreEqual(1, settings.SomeSetting1);
             Assert.AreEqual(2, settings.SomeNullableSetting2);
-            Assert.AreEqual(default(int), settings.SomeNonConvertibleSetting);
+            Assert.AreEqual(default, settings.SomeNonConvertibleSetting);
         }
 
         [TestMethod]
@@ -70,11 +74,11 @@ namespace RapidSettings.Tests.Attributes
         {
             var settingsFiller = this.GetBasicSettingsFiller();
 
-            var settings = await settingsFiller.CreateWithSettingsAsync<BasicSettings>();
+            var settings = await settingsFiller.CreateWithSettingsAsync<BasicSettings>().ConfigureAwait(false);
 
             Assert.AreEqual(1, settings.SomeSetting1);
             Assert.AreEqual(2, settings.SomeNullableSetting2);
-            Assert.AreEqual(default(int), settings.SomeNonConvertibleSetting);
+            Assert.AreEqual(default, settings.SomeNonConvertibleSetting);
         }
 
         private class SettingsWithUnretrievableProp
@@ -95,7 +99,7 @@ namespace RapidSettings.Tests.Attributes
         private SettingsFiller GetBasicSettingsFiller()
         {
             var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
-            var rawSettingsProvider = new FromFuncProvider(key => key.ToString().Last().ToString());
+            var rawSettingsProvider = new FromFuncProvider(key => key.Last().ToString(CultureInfo.InvariantCulture));
             var settingsFiller = new SettingsFiller(converterChooser, rawSettingsProvider);
 
             return settingsFiller;
@@ -127,7 +131,7 @@ namespace RapidSettings.Tests.Attributes
             Assert.IsFalse(settings.SomeOptionalWrappedNonRetrievableInt.Metadata.HasValueSpecified);
             Assert.IsFalse(settings.SomeOptionalWrappedNonRetrievableInt.Metadata.IsRequired);
             Assert.AreEqual(nameof(AdvancedSettings.SomeOptionalWrappedNonRetrievableInt), settings.SomeOptionalWrappedNonRetrievableInt.Metadata.Key);
-            Assert.AreEqual(default(int), settings.SomeOptionalWrappedNonRetrievableInt.Value);
+            Assert.AreEqual(default, settings.SomeOptionalWrappedNonRetrievableInt.Value);
 
             Assert.IsTrue(settings.SomeOptionalWrappedRetrievableInt.Metadata.HasValueSpecified);
             Assert.IsFalse(settings.SomeOptionalWrappedRetrievableInt.Metadata.IsRequired);
@@ -140,6 +144,7 @@ namespace RapidSettings.Tests.Attributes
             Assert.IsNull(settings.SomeOptionalWrappedNullableNonRetrievableInt.Value);
         }
 
+        [SuppressMessage("Design", "RCS1170:Use read-only auto-implemented property.", Justification = "Used by SettingsFiller")]
         private class AdvancedSettings
         {
             [ToFill]
@@ -171,15 +176,17 @@ namespace RapidSettings.Tests.Attributes
         }
 
         private class A { }
+
         private class B : A { }
+
         private class C : B { }
 
         private class SuperConverter : RawSettingsConverterBase
         {
             public SuperConverter()
             {
-                AddSupportForTypes(typeof(A), typeof(A), (rawValue, type) => rawValue);
-                AddSupportForTypes(typeof(C), typeof(C), (rawValue, type) => rawValue);
+                this.AddSupportForTypes(typeof(A), typeof(A), (rawValue, type) => rawValue);
+                this.AddSupportForTypes(typeof(C), typeof(C), (rawValue, type) => rawValue);
             }
         }
 

@@ -1,7 +1,8 @@
-﻿using System.Threading.Tasks;
-
-namespace RapidSettings.Core
+﻿namespace RapidSettings.Core
 {
+    using System;
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Interface for a class which asynchronously fills members decorated <see cref="ToFillAttribute"/> of given class instance.
     /// </summary>
@@ -22,10 +23,16 @@ namespace RapidSettings.Core
         /// <summary>
         /// Creates new instance of a class <typeparamref name="T"/> and asynchronously fill its members which are decorated with <see cref="ToFillAttribute"/>.
         /// </summary>
-        public static async Task<T> CreateWithSettingsAsync<T>(this ISettingsFillerAsync settingsFiller) where T : new()
+        public static async Task<T> CreateWithSettingsAsync<T>(this ISettingsFillerAsync settingsFiller)
+            where T : new()
         {
+            if (settingsFiller is null)
+            {
+                throw new ArgumentNullException(nameof(settingsFiller));
+            }
+
             var settingsClass = new T();
-            await settingsFiller.FillSettingsAsync(settingsClass);
+            await settingsFiller.FillSettingsAsync(settingsClass).ConfigureAwait(false);
             return settingsClass;
         }
     }

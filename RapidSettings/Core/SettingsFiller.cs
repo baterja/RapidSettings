@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-
-namespace RapidSettings.Core
+﻿namespace RapidSettings.Core
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Fills props decorated with <see cref="ToFillAttribute"/>.
     /// </summary>
@@ -17,24 +17,13 @@ namespace RapidSettings.Core
         public const string DefaultRawSettingsProviderKey = "###DEFAULT###";
 
         /// <summary>
-        /// Settings providers by their names.
-        /// </summary>
-        public IDictionary<string, IRawSettingsProvider> RawSettingsProvidersByNames { get; }
-
-        /// <summary>
-        /// Converter chooser which will be used to choose converters which will be used for conversion ~ capt. Obvious.
-        /// </summary>
-        public ISettingsConverterChooser SettingsConverterChooser { get; }
-
-        /// <summary>
         /// Initializes a new instance of <see cref="SettingsFiller"/> class with converter chooser and default raw settings provider. Any parameter left with null will default to values from <see cref="SettingsFillerStaticDefaults"/>.
         /// </summary>
         public SettingsFiller(ISettingsConverterChooser settingsConverterChooser = null, IRawSettingsProvider defaultRawSettingsProvider = null)
             : this(
                   settingsConverterChooser ?? SettingsFillerStaticDefaults.DefaultSettingsConverterChooser,
                   defaultRawSettingsProvider == null ? new Dictionary<string, IRawSettingsProvider>(SettingsFillerStaticDefaults.DefaultRawSettingsProviders) : new Dictionary<string, IRawSettingsProvider> { { DefaultRawSettingsProviderKey, defaultRawSettingsProvider } },
-                  defaultRawSettingsProvider ?? SettingsFillerStaticDefaults.DefaultDefaultRawSettingsProvider
-              )
+                  defaultRawSettingsProvider ?? SettingsFillerStaticDefaults.DefaultDefaultRawSettingsProvider)
         { }
 
         /// <summary>
@@ -60,160 +49,52 @@ namespace RapidSettings.Core
         }
 
         /// <summary>
-        /// Fills <paramref name="objectWithDecoratedProps"/> properties decorated with <see cref="ToFillAttribute"/>.
+        /// Settings providers by their names.
         /// </summary>
-        public void FillSettings<T>(T objectWithDecoratedProps)
+        public IDictionary<string, IRawSettingsProvider> RawSettingsProvidersByNames { get; }
+
+        /// <summary>
+        /// Converter chooser which will be used to choose converters which will be used for conversion ~ capt. Obvious.
+        /// </summary>
+        public ISettingsConverterChooser SettingsConverterChooser { get; }
+
+        /// <summary>
+        /// Fills <paramref name="objectToFill"/> properties decorated with <see cref="ToFillAttribute"/>.
+        /// </summary>
+        public void FillSettings<T>(T objectToFill)
         {
             var propertiesToFill = this.GetPropertiesToFill(typeof(T));
             foreach (var propToFill in propertiesToFill)
             {
                 var setting = this.ResolveSetting(propToFill);
-                propToFill.SetValue(objectWithDecoratedProps, setting);
+                propToFill.SetValue(objectToFill, setting);
             }
         }
 
         /// <summary>
-        /// Asynchronously fills <paramref name="objectWithDecoratedProps"/> properties decorated with <see cref="ToFillAttribute"/>.
+        /// Asynchronously fills <paramref name="objectToFill"/> properties decorated with <see cref="ToFillAttribute"/>.
         /// </summary>
-        public async Task FillSettingsAsync<T>(T objectWithDecoratedProps)
+        public async Task FillSettingsAsync<T>(T objectToFill)
         {
             var propertiesToFill = this.GetPropertiesToFill(typeof(T));
             foreach (var propToFill in propertiesToFill)
             {
-                // TODO parallelization based on some setting 
+                // TODO parallelization based on some setting
 
-                var setting = await this.ResolveSettingAsync(propToFill);
-                propToFill.SetValue(objectWithDecoratedProps, setting);
+                var setting = await this.ResolveSettingAsync(propToFill).ConfigureAwait(false);
+                propToFill.SetValue(objectToFill, setting);
             }
         }
 
-        private object ResolveSetting(PropertyInfo propToFill)
+        /// <summary>
+        /// Gets <see cref="Type"/> that is wrapped in <see cref="Setting{T}"/>.
+        /// </summary>
+        private static Type GetWrappedType(Type propertyType)
         {
-            #region Setting wrapper support
-            var isSetting = propToFill.PropertyType.IsGenericType && propToFill.PropertyType.GetGenericTypeDefinition() == typeof(Setting<>);
-            var typeOfMemberToSet = isSetting ? this.GetWrappedType(propToFill.PropertyType) : propToFill.PropertyType;
-            #endregion
-
-            #region Nullable support
-            var underlayingTypeOfNullable = Nullable.GetUnderlyingType(typeOfMemberToSet);
-            var unwrappedTypeOfPropToSet = underlayingTypeOfNullable ?? typeOfMemberToSet;
-            #endregion
-
-            #region Resolution & Conversion
-            var toFillAttribute = propToFill.GetCustomAttribute<ToFillAttribute>();
-            var requestedRawSettingsProviderName = toFillAttribute.RawSettingsProviderName;
-            var rawSettingsProvider = this.ChooseRawSettingsProvider(requestedRawSettingsProviderName);
-            var rawSetting = this.GetRawSetting(rawSettingsProvider, toFillAttribute.Key);
-
-            object settingValue = typeOfMemberToSet.IsValueType ? Activator.CreateInstance(typeOfMemberToSet) : null;
-            var hasValueSpecified = rawSetting != null;
-            if (!hasValueSpecified)
-            {
-                if (toFillAttribute.IsRequired)
-                {
-                    throw new RapidSettingsException($"Resolution of required setting {propToFill.Name} returned null!");
-                }
-            }
-            else
-            {
-                // TODO make conversion optional (basing on some setting) when rawSetting's type is assignable to typeOfMemberToSet
-
-                var convertMethod = typeof(ISettingsConverterChooser).GetMethod(nameof(ISettingsConverterChooser.ChooseAndConvert));
-                var convertGenericMethod = convertMethod.MakeGenericMethod(rawSetting.GetType(), unwrappedTypeOfPropToSet);
-
-                try
-                {
-                    settingValue = convertGenericMethod.Invoke(this.SettingsConverterChooser, new[] { rawSetting });
-                    hasValueSpecified = true;
-                }
-                catch (Exception e)
-                {
-                    if (toFillAttribute.IsRequired)
-                    {
-                        throw new RapidSettingsException($"Conversion of required setting {propToFill.Name} failed!", e);
-                    }
-
-                    hasValueSpecified = false;
-                }
-            }
-            #endregion
-
-            #region Setting support
-            object setting = settingValue;
-            if (isSetting)
-            {
-                var settingMetadata = new SettingMetadata(toFillAttribute.Key, toFillAttribute.IsRequired, hasValueSpecified);
-                setting = Activator.CreateInstance(typeof(Setting<>).MakeGenericType(propToFill.PropertyType.GetGenericArguments()), new object[] { settingValue, settingMetadata });
-            }
-            #endregion
-
-            return setting;
+            return propertyType.GetGenericArguments().First();
         }
 
-        private async Task<object> ResolveSettingAsync(PropertyInfo propToFill)
-        {
-            #region Setting wrapper support
-            var isSetting = propToFill.PropertyType.IsGenericType && propToFill.PropertyType.GetGenericTypeDefinition() == typeof(Setting<>);
-            var typeOfMemberToSet = isSetting ? this.GetWrappedType(propToFill.PropertyType) : propToFill.PropertyType;
-            #endregion
-
-            #region Nullable support
-            var underlayingTypeOfNullable = Nullable.GetUnderlyingType(typeOfMemberToSet);
-            var unwrappedTypeOfPropToSet = underlayingTypeOfNullable ?? typeOfMemberToSet;
-            #endregion
-
-            #region Resolution & Conversion
-            var toFillAttribute = propToFill.GetCustomAttribute<ToFillAttribute>();
-            var requestedRawSettingsProviderName = toFillAttribute.RawSettingsProviderName;
-            var rawSettingsProvider = this.ChooseRawSettingsProvider(requestedRawSettingsProviderName);
-            var rawSetting = await this.GetRawSettingAsync(rawSettingsProvider, toFillAttribute.Key);
-
-            object settingValue = typeOfMemberToSet.IsValueType ? Activator.CreateInstance(typeOfMemberToSet) : null;
-            var hasValueSpecified = rawSetting != null;
-            if (!hasValueSpecified)
-            {
-                if (toFillAttribute.IsRequired)
-                {
-                    throw new RapidSettingsException($"Resolution of required setting {propToFill.Name} returned null!");
-                }
-            }
-            else
-            {
-                // TODO make conversion optional (basing on some setting) when rawSetting's type is assignable to typeOfMemberToSet
-
-                var convertMethod = typeof(ISettingsConverterChooser).GetMethod(nameof(ISettingsConverterChooser.ChooseAndConvert));
-                var convertGenericMethod = convertMethod.MakeGenericMethod(rawSetting.GetType(), unwrappedTypeOfPropToSet);
-
-                try
-                {
-                    settingValue = convertGenericMethod.Invoke(this.SettingsConverterChooser, new[] { rawSetting });
-                    hasValueSpecified = true;
-                }
-                catch (Exception e)
-                {
-                    if (toFillAttribute.IsRequired)
-                    {
-                        throw new RapidSettingsException($"Conversion of required setting {propToFill.Name} failed!", e);
-                    }
-
-                    hasValueSpecified = false;
-                }
-            }
-            #endregion
-
-            #region Setting support
-            object setting = settingValue;
-            if (isSetting)
-            {
-                var settingMetadata = new SettingMetadata(toFillAttribute.Key, toFillAttribute.IsRequired, hasValueSpecified);
-                setting = Activator.CreateInstance(typeof(Setting<>).MakeGenericType(propToFill.PropertyType.GetGenericArguments()), new object[] { settingValue, settingMetadata });
-            }
-            #endregion
-
-            return setting;
-        }
-
-        private object GetRawSetting(IRawSettingsProvider rawSettingsProvider, string settingKey)
+        private static object GetRawSetting(IRawSettingsProvider rawSettingsProvider, string settingKey)
         {
             switch (rawSettingsProvider)
             {
@@ -228,12 +109,12 @@ namespace RapidSettings.Core
             }
         }
 
-        private async Task<object> GetRawSettingAsync(IRawSettingsProvider rawSettingsProvider, string settingKey)
+        private static async Task<object> GetRawSettingAsync(IRawSettingsProvider rawSettingsProvider, string settingKey)
         {
             switch (rawSettingsProvider)
             {
                 case IRawSettingsProviderAsync rawSettingsProviderAsync:
-                    return await rawSettingsProviderAsync.GetRawSettingAsync(settingKey);
+                    return await rawSettingsProviderAsync.GetRawSettingAsync(settingKey).ConfigureAwait(false);
                 case IRawSettingsProviderSync rawSettingsProviderSync:
                     return rawSettingsProviderSync.GetRawSetting(settingKey);
                 default:
@@ -241,6 +122,132 @@ namespace RapidSettings.Core
                     var errorMessage = $"{nameof(IRawSettingsProvider)} with type {rawSettingsProvider.GetType().Name} doesn't implement neither {nameof(IRawSettingsProviderSync)} nor {nameof(IRawSettingsProviderAsync)}!";
                     throw new RapidSettingsException(errorMessage);
             }
+        }
+
+        private object ResolveSetting(PropertyInfo propToFill)
+        {
+            #region Setting wrapper support
+            var isSetting = propToFill.PropertyType.IsGenericType && propToFill.PropertyType.GetGenericTypeDefinition() == typeof(Setting<>);
+            var typeOfMemberToSet = isSetting ? GetWrappedType(propToFill.PropertyType) : propToFill.PropertyType;
+            #endregion
+
+            #region Nullable support
+            var underlayingTypeOfNullable = Nullable.GetUnderlyingType(typeOfMemberToSet);
+            var unwrappedTypeOfPropToSet = underlayingTypeOfNullable ?? typeOfMemberToSet;
+            #endregion
+
+            #region Resolution & Conversion
+            var toFillAttribute = propToFill.GetCustomAttribute<ToFillAttribute>();
+            var requestedRawSettingsProviderName = toFillAttribute.RawSettingsProviderName;
+            var rawSettingsProvider = this.ChooseRawSettingsProvider(requestedRawSettingsProviderName);
+            var rawSetting = GetRawSetting(rawSettingsProvider, toFillAttribute.Key);
+
+            var settingValue = typeOfMemberToSet.IsValueType ? Activator.CreateInstance(typeOfMemberToSet) : null;
+            var hasValueSpecified = rawSetting != null;
+            if (!hasValueSpecified)
+            {
+                if (toFillAttribute.IsRequired)
+                {
+                    throw new RapidSettingsException($"Resolution of required setting {propToFill.Name} returned null!");
+                }
+            }
+            else
+            {
+                // TODO make conversion optional (basing on some setting) when rawSetting's type is assignable to typeOfMemberToSet
+
+                var convertMethod = typeof(ISettingsConverterChooser).GetMethod(nameof(ISettingsConverterChooser.ChooseAndConvert));
+                var convertGenericMethod = convertMethod.MakeGenericMethod(rawSetting.GetType(), unwrappedTypeOfPropToSet);
+
+                try
+                {
+                    settingValue = convertGenericMethod.Invoke(this.SettingsConverterChooser, new[] { rawSetting });
+                    hasValueSpecified = true;
+                }
+                catch (Exception e)
+                {
+                    if (toFillAttribute.IsRequired)
+                    {
+                        throw new RapidSettingsException($"Conversion of required setting {propToFill.Name} failed!", e);
+                    }
+
+                    hasValueSpecified = false;
+                }
+            }
+            #endregion
+
+            #region Setting support
+            var setting = settingValue;
+            if (isSetting)
+            {
+                var settingMetadata = new SettingMetadata(toFillAttribute.Key, toFillAttribute.IsRequired, hasValueSpecified);
+                setting = Activator.CreateInstance(typeof(Setting<>).MakeGenericType(propToFill.PropertyType.GetGenericArguments()), new object[] { settingValue, settingMetadata });
+            }
+            #endregion
+
+            return setting;
+        }
+
+        private async Task<object> ResolveSettingAsync(PropertyInfo propToFill)
+        {
+            #region Setting wrapper support
+            var isSetting = propToFill.PropertyType.IsGenericType && propToFill.PropertyType.GetGenericTypeDefinition() == typeof(Setting<>);
+            var typeOfMemberToSet = isSetting ? GetWrappedType(propToFill.PropertyType) : propToFill.PropertyType;
+            #endregion
+
+            #region Nullable support
+            var underlayingTypeOfNullable = Nullable.GetUnderlyingType(typeOfMemberToSet);
+            var unwrappedTypeOfPropToSet = underlayingTypeOfNullable ?? typeOfMemberToSet;
+            #endregion
+
+            #region Resolution & Conversion
+            var toFillAttribute = propToFill.GetCustomAttribute<ToFillAttribute>();
+            var requestedRawSettingsProviderName = toFillAttribute.RawSettingsProviderName;
+            var rawSettingsProvider = this.ChooseRawSettingsProvider(requestedRawSettingsProviderName);
+            var rawSetting = await GetRawSettingAsync(rawSettingsProvider, toFillAttribute.Key).ConfigureAwait(false);
+
+            var settingValue = typeOfMemberToSet.IsValueType ? Activator.CreateInstance(typeOfMemberToSet) : null;
+            var hasValueSpecified = rawSetting != null;
+            if (!hasValueSpecified)
+            {
+                if (toFillAttribute.IsRequired)
+                {
+                    throw new RapidSettingsException($"Resolution of required setting {propToFill.Name} returned null!");
+                }
+            }
+            else
+            {
+                // TODO make conversion optional (basing on some setting) when rawSetting's type is assignable to typeOfMemberToSet
+
+                var convertMethod = typeof(ISettingsConverterChooser).GetMethod(nameof(ISettingsConverterChooser.ChooseAndConvert));
+                var convertGenericMethod = convertMethod.MakeGenericMethod(rawSetting.GetType(), unwrappedTypeOfPropToSet);
+
+                try
+                {
+                    settingValue = convertGenericMethod.Invoke(this.SettingsConverterChooser, new[] { rawSetting });
+                    hasValueSpecified = true;
+                }
+                catch (Exception e)
+                {
+                    if (toFillAttribute.IsRequired)
+                    {
+                        throw new RapidSettingsException($"Conversion of required setting {propToFill.Name} failed!", e);
+                    }
+
+                    hasValueSpecified = false;
+                }
+            }
+            #endregion
+
+            #region Setting support
+            var setting = settingValue;
+            if (isSetting)
+            {
+                var settingMetadata = new SettingMetadata(toFillAttribute.Key, toFillAttribute.IsRequired, hasValueSpecified);
+                setting = Activator.CreateInstance(typeof(Setting<>).MakeGenericType(propToFill.PropertyType.GetGenericArguments()), new object[] { settingValue, settingMetadata });
+            }
+            #endregion
+
+            return setting;
         }
 
         private IRawSettingsProvider ChooseRawSettingsProvider(string requestedRawSettingsProviderName)
@@ -272,14 +279,6 @@ namespace RapidSettings.Core
             var propertiesToFill = typeOfObjectToFill.GetProperties().Where(prop => prop.IsDefined(typeof(ToFillAttribute), true));
 
             return propertiesToFill;
-        }
-
-        /// <summary>
-        /// Gets <see cref="Type"/> that is wrapped in <see cref="Setting{T}"/>.
-        /// </summary>
-        private Type GetWrappedType(Type propertyType)
-        {
-            return propertyType.GetGenericArguments().First();
         }
 
         /// <summary>

@@ -1,17 +1,16 @@
-﻿using RapidSettings.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace RapidSettings.Core
+﻿namespace RapidSettings.Core
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     /// <summary>
     /// Provides base class for easier creation of converters. Among others: unwrapping nullable types, checking for null value, choosing and applying proper Func.
     /// </summary>
     public abstract class RawSettingsConverterBase : IRawSettingsConverter
     {
         /// <summary>
-        /// Dictionary of funcs that will be used to convert raw values from and to given type (but as <see cref="object"/>). 
+        /// Dictionary of funcs that will be used to convert raw values from and to given type (but as <see cref="object"/>).
         /// Type from and to which raw value should be converted should be given as key. Additionally type to which it should convert should be added as second func argument.
         /// </summary>
         protected IDictionary<(Type FromType, Type ToType), Func<object, Type, object>> ConvertingFuncs { get; } = new Dictionary<(Type FromType, Type ToType), Func<object, Type, object>>();
@@ -56,7 +55,7 @@ namespace RapidSettings.Core
         {
             if (rawValue == null)
             {
-                throw new RapidSettingsException($"Null cannot be converted to anything!");
+                throw new RapidSettingsException("Null cannot be converted to anything!");
             }
 
             var typeOfT = typeof(TTo);
@@ -66,7 +65,11 @@ namespace RapidSettings.Core
             try
             {
                 var convertingFunc = this.GetConvertingFunc<TFrom, TTo>();
+#pragma warning disable S1905 // Redundant casts should not be used (cast is not redundant but analyzer complains)
+#pragma warning disable IDE0004 // Redundant casts should not be used (cast is not redundant but analyzer complains)
                 value = (TTo)(object)convertingFunc((TFrom)rawValue, underlayingType);
+#pragma warning restore IDE0004 // Redundant casts should not be used
+#pragma warning restore S1905 // Redundant casts should not be used
             }
             catch (Exception e)
             {
@@ -81,7 +84,7 @@ namespace RapidSettings.Core
         /// </summary>
         /// <typeparam name="TFrom">Type from which value should be converted.</typeparam>
         /// <typeparam name="TTo">Type to which value should be converted.</typeparam>
-        /// <returns>Should return proper func if there is any which can convert from type to which <typeparamref name="TFrom"/> is assignable 
+        /// <returns>Should return proper func if there is any which can convert from type to which <typeparamref name="TFrom"/> is assignable
         /// to type which is assignable to <typeparamref name="TTo"/>.</returns>
         protected virtual Func<object, Type, object> GetConvertingFunc<TFrom, TTo>()
         {
@@ -111,7 +114,7 @@ namespace RapidSettings.Core
 
             if (!this.SupportedConversions[fromType].Add(toType))
             {
-                throw new RapidSettingsException($"Converting func from type {fromType.Name} to type {toType.Name} is already added!");
+                throw new RapidSettingsException($"Converting func from type {fromType?.Name} to type {toType?.Name} is already added!");
             }
         }
     }

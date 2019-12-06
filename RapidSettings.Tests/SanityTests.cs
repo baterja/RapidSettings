@@ -1,10 +1,11 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RapidSettings.Core;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace RapidSettings.Tests.Attributes
+﻿namespace RapidSettings.Tests.Attributes
 {
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using RapidSettings.Core;
+    using System.Globalization;
+    using System.Linq;
+    using System.Threading.Tasks;
+
     [TestClass]
     public class SanityTests
     {
@@ -29,7 +30,7 @@ namespace RapidSettings.Tests.Attributes
 
             Assert.AreEqual(1, settings.SomeSetting1);
             Assert.AreEqual(2, settings.SomeNullableSetting2);
-            Assert.AreEqual(default(int), settings.SomeNonConvertibleSetting);
+            Assert.AreEqual(default, settings.SomeNonConvertibleSetting);
         }
 
         [TestMethod]
@@ -41,7 +42,7 @@ namespace RapidSettings.Tests.Attributes
 
             Assert.AreEqual(1, settings.SomeSetting1);
             Assert.AreEqual(2, settings.SomeNullableSetting2);
-            Assert.AreEqual(default(int), settings.SomeNonConvertibleSetting);
+            Assert.AreEqual(default, settings.SomeNonConvertibleSetting);
         }
 
         [TestMethod]
@@ -49,17 +50,17 @@ namespace RapidSettings.Tests.Attributes
         {
             var settingsFiller = this.GetSettingsFiller();
 
-            var settings = await settingsFiller.CreateWithSettingsAsync<TestSettings>();
+            var settings = await settingsFiller.CreateWithSettingsAsync<TestSettings>().ConfigureAwait(false);
 
             Assert.AreEqual(1, settings.SomeSetting1);
             Assert.AreEqual(2, settings.SomeNullableSetting2);
-            Assert.AreEqual(default(int), settings.SomeNonConvertibleSetting);
+            Assert.AreEqual(default, settings.SomeNonConvertibleSetting);
         }
 
         private SettingsFiller GetSettingsFiller()
         {
             var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
-            var rawSettingsProvider = new FromFuncProvider(key => key.ToString().Last().ToString());
+            var rawSettingsProvider = new FromFuncProvider(key => key.Last().ToString(CultureInfo.InvariantCulture));
             var settingsFiller = new SettingsFiller(converterChooser, rawSettingsProvider);
 
             return settingsFiller;
@@ -67,7 +68,7 @@ namespace RapidSettings.Tests.Attributes
 
         private SettingsFiller GetSettingsFillerWithDefaultCtor()
         {
-            SettingsFillerStaticDefaults.DefaultDefaultRawSettingsProvider = new FromFuncProvider(key => key.ToString().Last().ToString());
+            SettingsFillerStaticDefaults.DefaultDefaultRawSettingsProvider = new FromFuncProvider(key => key.Last().ToString(CultureInfo.InvariantCulture));
             var settingsFiller = new SettingsFiller();
 
             return settingsFiller;

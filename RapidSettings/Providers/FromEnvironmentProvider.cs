@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace RapidSettings.Core
+﻿namespace RapidSettings.Core
 {
+    using System;
+
     /// <summary>
     /// Provides raw setting value from environment variable.
     /// </summary>

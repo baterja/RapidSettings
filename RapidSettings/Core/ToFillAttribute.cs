@@ -1,8 +1,8 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-
-namespace RapidSettings.Core
+﻿namespace RapidSettings.Core
 {
+    using System;
+    using System.Runtime.CompilerServices;
+
     /// <summary>
     /// Indicates that marked property should be filled by <see cref="ISettingsFiller"/>.
     /// </summary>

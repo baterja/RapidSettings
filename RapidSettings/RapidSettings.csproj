@@ -12,15 +12,21 @@
     <RepositoryUrl>https://github.com/baterja/RapidSettings</RepositoryUrl>
     <Authors>mtomcz</Authors>
     <Company />
-    <PackageTags>app.config;web.config;appsettings;settings;configuration;env;ConfigurationManager</PackageTags>
+    <PackageTags>app.config;web.config;appsettings;settings;configuration;env;ConfigurationManager;IConfiguration</PackageTags>
     <RepositoryType>git</RepositoryType>
-    <PackageLicenseUrl>http://unlicense.org/</PackageLicenseUrl>
     <Description>Simple and extensible way to make web.config/app.config/env vars/whatever easier to read and strongly typed!</Description>
+    <PackageLicenseExpression>Unlicense</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.2.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.0" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net45'">
@@ -30,16 +36,11 @@
 
   <ItemGroup Condition="'$(TargetFramework)'=='net47'">
     <Reference Include="System.Configuration" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="SourceLink.Copy.PdbFiles" Version="2.8.3">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
   </ItemGroup>
 
 </Project>

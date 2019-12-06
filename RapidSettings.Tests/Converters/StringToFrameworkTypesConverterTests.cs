@@ -1,15 +1,17 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RapidSettings.Core;
-using System;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-
-namespace RapidSettings.Tests.Converters
+﻿namespace RapidSettings.Tests.Converters
 {
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using RapidSettings.Core;
+    using System;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
+    using System.IO;
+    using System.Linq;
+
     [TestClass]
     public class StringToFrameworkTypesConverterTests
     {
+        [SuppressMessage("Design", "RCS1170:Use read-only auto-implemented property.", Justification = "Used by SettingsFiller")]
         private class NumericFrameworkTypesSettings
         {
             [ToFill]
@@ -62,8 +64,8 @@ namespace RapidSettings.Tests.Converters
             Assert.AreEqual(1, settings.Int1);
             Assert.AreEqual(1, settings.Sbyte1);
             Assert.AreEqual(1, settings.Short1);
-            Assert.AreEqual((uint)1, settings.Uint1);
-            Assert.AreEqual((ulong)1, settings.Ulong1);
+            Assert.AreEqual(1U, settings.Uint1);
+            Assert.AreEqual(1UL, settings.Ulong1);
             Assert.AreEqual((ushort)1, settings.Ushort1);
             #endregion
         }
@@ -84,6 +86,7 @@ namespace RapidSettings.Tests.Converters
             Assert.AreEqual(1, settings.Int1.Value);
         }
 
+        [SuppressMessage("Design", "RCS1170:Use read-only auto-implemented property.", Justification = "Used by SettingsFiller")]
         private class NonNumericFrameworkTypesSettings
         {
             [ToFill]
@@ -150,7 +153,7 @@ namespace RapidSettings.Tests.Converters
             var settings = settingsFiller.CreateWithSettings<NonNumericFrameworkTypesSettings>();
 
             Assert.AreEqual(true, settings.SomeBoolean);
-            Assert.IsTrue(default(Guid) != settings.SomeGuid);
+            Assert.IsTrue(settings.SomeGuid != default);
             Assert.AreEqual("asdf", settings.SomeString);
             Assert.AreEqual(TimeSpan.Parse("12:13:14", CultureInfo.InvariantCulture), settings.SomeTimeSpan);
             Assert.AreEqual(DateTime.Parse("2000-01-01", CultureInfo.InvariantCulture), settings.SomeDateTime);
@@ -160,6 +163,7 @@ namespace RapidSettings.Tests.Converters
             Assert.AreEqual(new FileInfo("filename.txt").FullName, settings.SomeFileInfo.FullName);
         }
 
+        [SuppressMessage("Design", "RCS1170:Use read-only auto-implemented property.", Justification = "Used by SettingsFiller")]
         private class NonInvariantDoubleSettings
         {
             [ToFill]
@@ -179,7 +183,7 @@ namespace RapidSettings.Tests.Converters
         private SettingsFiller GetSettingsFiller()
         {
             var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
-            var rawSettingsProvider = new FromFuncProvider(key => key.ToString().Last().ToString());
+            var rawSettingsProvider = new FromFuncProvider(key => key.Last().ToString(CultureInfo.InvariantCulture));
             var settingsFiller = new SettingsFiller(converterChooser, rawSettingsProvider);
 
             return settingsFiller;

@@ -1,18 +1,18 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RapidSettings.Core;
-using System.Threading.Tasks;
-
-namespace RapidSettings.Tests.Providers
+﻿namespace RapidSettings.Tests.Providers
 {
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using RapidSettings.Core;
+    using System.Threading.Tasks;
+
     [TestClass]
     public class FromTaskFuncProviderTests
     {
         [TestMethod]
         public async Task FromTaskFuncProviderTest_SimpleRetrieval()
         {
-            var fromTaskFuncProvider = new FromTaskFuncProvider(key => Task.Factory.StartNew<object>(() => key == "ExistingKey" ? "ExistingKeyValue" : null));
+            var fromTaskFuncProvider = new FromTaskFuncProvider(key => Task.Run<object>(() => key == "ExistingKey" ? "ExistingKeyValue" : null));
 
-            var existingKeyValue = await fromTaskFuncProvider.GetRawSettingAsync("ExistingKey");
+            var existingKeyValue = await fromTaskFuncProvider.GetRawSettingAsync("ExistingKey").ConfigureAwait(false);
 
             Assert.AreEqual("ExistingKeyValue", existingKeyValue);
         }
@@ -20,9 +20,9 @@ namespace RapidSettings.Tests.Providers
         [TestMethod]
         public async Task FromTaskFuncProviderTest_NonExistingRetrieval()
         {
-            var fromTaskFuncProvider = new FromTaskFuncProvider(key => Task.Factory.StartNew<object>(() => key == "ExistingKey" ? "ExistingKeyValue" : null));
+            var fromTaskFuncProvider = new FromTaskFuncProvider(key => Task.Run<object>(() => key == "ExistingKey" ? "ExistingKeyValue" : null));
 
-            var notExistingKeyValue = await fromTaskFuncProvider.GetRawSettingAsync("NotExistingKey");
+            var notExistingKeyValue = await fromTaskFuncProvider.GetRawSettingAsync("NotExistingKey").ConfigureAwait(false);
 
             Assert.IsNull(notExistingKeyValue, "Not existing key value is not null!");
         }
@@ -31,9 +31,9 @@ namespace RapidSettings.Tests.Providers
         [ExpectedException(typeof(RapidSettingsException), AllowDerivedTypes = true)]
         public async Task FromTaskFuncProviderTest_NullRetrieval()
         {
-            var fromTaskFuncProvider = new FromTaskFuncProvider(key => Task.Factory.StartNew<object>(() => key == "ExistingKey" ? "ExistingKeyValue" : null));
+            var fromTaskFuncProvider = new FromTaskFuncProvider(key => Task.Run<object>(() => key == "ExistingKey" ? "ExistingKeyValue" : null));
 
-            var nullKeyValue = await fromTaskFuncProvider.GetRawSettingAsync(null);
+            var nullKeyValue = await fromTaskFuncProvider.GetRawSettingAsync(null).ConfigureAwait(false);
         }
     }
 }

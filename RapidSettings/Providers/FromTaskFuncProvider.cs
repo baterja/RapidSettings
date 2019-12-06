@@ -1,8 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace RapidSettings.Core
+﻿namespace RapidSettings.Core
 {
+    using System;
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Customizable settings provider which provides its value asynchronously.
     /// </summary>

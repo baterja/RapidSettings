@@ -1,9 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RapidSettings.Core;
-using System;
-
-namespace RapidSettings.Tests.Providers
+﻿namespace RapidSettings.Tests.Providers
 {
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using RapidSettings.Core;
+    using System;
+
     [TestClass]
     public class FromEnvironmentProviderTests
     {

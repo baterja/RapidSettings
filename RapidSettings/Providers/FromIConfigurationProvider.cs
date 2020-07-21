@@ -6,7 +6,7 @@ namespace RapidSettings.Core
     /// <summary>
     /// Provides raw setting value from given <see cref="IConfiguration"/>.
     /// </summary>
-    public class FromIConfigurationProvider : IRawSettingsProviderSync
+    public class FromIConfigurationProvider : IRawSettingsProvider
     {
         /// <summary>
         /// Source <see cref="IConfiguration"/> of this provider's instance.

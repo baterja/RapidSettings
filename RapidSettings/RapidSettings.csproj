@@ -10,12 +10,15 @@
     <FileVersion>0.0.0.0</FileVersion>
     <PackageProjectUrl>https://github.com/baterja/RapidSettings</PackageProjectUrl>
     <RepositoryUrl>https://github.com/baterja/RapidSettings</RepositoryUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <Authors>mtomcz</Authors>
     <Company />
     <PackageTags>app.config;web.config;appsettings;settings;configuration;env;ConfigurationManager</PackageTags>
     <RepositoryType>git</RepositoryType>
-    <PackageLicenseUrl>http://unlicense.org/</PackageLicenseUrl>
+    <PackageLicenseExpression>Unlicense</PackageLicenseExpression>
     <Description>Simple and extensible way to make web.config/app.config/env vars/whatever easier to read and strongly typed!</Description>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
@@ -34,12 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="SourceLink.Copy.PdbFiles" Version="2.8.3">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
   </ItemGroup>
 
 </Project>

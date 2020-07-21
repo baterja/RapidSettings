@@ -5,7 +5,7 @@ namespace RapidSettings.Core
     /// <summary>
     /// Provides raw setting value from app.config/web.config.
     /// </summary>
-    public class FromAppSettingsProvider : IRawSettingsProviderSync
+    public class FromAppSettingsProvider : IRawSettingsProvider
     {
         /// <summary>
         /// Gets raw setting value from app.config/web.config by given string <paramref name="key"/>.

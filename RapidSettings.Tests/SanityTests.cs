@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RapidSettings.Core;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace RapidSettings.Tests.Attributes
 {
@@ -38,18 +37,6 @@ namespace RapidSettings.Tests.Attributes
             var settingsFiller = this.GetSettingsFillerWithDefaultCtor();
 
             var settings = settingsFiller.CreateWithSettings<TestSettings>();
-
-            Assert.AreEqual(1, settings.SomeSetting1);
-            Assert.AreEqual(2, settings.SomeNullableSetting2);
-            Assert.AreEqual(default(int), settings.SomeNonConvertibleSetting);
-        }
-
-        [TestMethod]
-        public async Task SanityTestAsync()
-        {
-            var settingsFiller = this.GetSettingsFiller();
-
-            var settings = await settingsFiller.CreateWithSettingsAsync<TestSettings>();
 
             Assert.AreEqual(1, settings.SomeSetting1);
             Assert.AreEqual(2, settings.SomeNullableSetting2);

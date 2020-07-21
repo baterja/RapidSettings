@@ -5,7 +5,7 @@ namespace RapidSettings.Core
     /// <summary>
     /// Customizable settings provider which provides its value by a func.
     /// </summary>
-    public class FromFuncProvider : IRawSettingsProviderSync
+    public class FromFuncProvider : IRawSettingsProvider
     {
         private readonly Func<string, object> rawSettingResolvingFunc;
 

@@ -2,16 +2,7 @@
 Simple and extensible way to make web.config/app.config/env vars/whatever easier to read and strongly typed!
 
 TODOs:
-- [x] Test everything thoroughly,
-- [x] Learn how to use AppVeyor to properly patch version numbers,
-- [x] Create some QuickStart or another tutorial,
-- [x] Organize namespaces because it's too many of them to do so few things,
-- [x] List features on GitHub,
-- [ ] Create separate packages with more advanced Converters and Providers,
-- [ ] Make more specific exceptions (if someone expresses such a need),
-- [ ] Add another interface for Providers which will enable retrieving multiple raw values at once,
 - [ ] Make conversion optional when type of setting retrieved by Provider is assignable to type of target property (+ setting to turn it on/off),
-- [ ] Make retrieving raw setting values with Providers run in parallel if there are multiple Providers and they are async (+ setting to turn it on/off),
 - [ ] Add Converters chaining to ```ISettingsConverterChooser``` (if there is converter which converts from ```A``` to ```B``` and the other one converts from ```B``` to ```C``` then conversion from ```A``` to ```C``` should be possible)
 
 # Table of contents
@@ -102,7 +93,7 @@ var settings = settingsFiller.CreateWithSettings<SomeSettings>();
 Those are the steps which are usally performed by this library:
 - you prepare Providers, Converters, ConverterChooser and SettingsFiller and use it on some class with properties decorated with ```ToFill``` attribute,
 - properties decorated with ```ToFill``` attribute are collected and for each of them:
-  - setting is retrieved by ```string``` key by ```IRawSettingsProvider``` or ```IRawSettingsProviderAsync``` which has been chosen by attribute's property of is default,
+  - setting is retrieved by ```string``` key by ```IRawSettingsProvider``` which has been chosen by attribute's property of is default,
   - target type of conversion is determined (unwrapping ```Nullable<>``` and ```Setting<>```),
   - converter is chosen by and used by ```SettingsConverterChooser```,
   - (optional) if setting is wrapped in ```Setting<>```, ```SettingMetadata``` are created,
@@ -119,13 +110,13 @@ There you can set 3 things:
 
 <a name="Retrieval"></a>
 ### Retrieval
-Settings in "raw" form are provided in sync or async way by ```IRawSettingsProvider``` or ```IRawSettingsProviderAsync``` with method ```GetRawSetting``` (or its ```async``` version) taking ```string``` key as parameter and returning some ```object```. Implementations of those interfaces provided by library are:
+Settings in "raw" form are provided by ```IRawSettingsProvider``` with method ```GetRawSetting``` taking ```string``` key as parameter and returning some ```object```. Implementations of those interfaces provided by library are:
+- ```FromIConfigurationProvider``` which needs to be created with ```IConfiguration``` instance to use,
 - ```FromAppSettingsProvider``` which uses ```ConfigurationManager.AppSettings.Get()```,
 - ```FromEnvironmentProvider``` which uses ```Environment.GetEnvironmentVariable()```,
 - ```FromFuncProvider``` - parameterizable provider which is just using ```Invoke()``` on ```Func<string, object>``` which it get in constructor,
-- ```FromTaskFuncProvider``` - parameterizable provider which is using ```Invoke()``` on ```Func<string, Task<object>>``` to get ```Task<>``` which will provide raw form of setting.
 
-And of course you can add your own by implementing ```IRawSettingsProvider``` or ```IRawSettingsProviderAsync```.
+And of course you can add your own by implementing ```IRawSettingsProvider```.
 
 <a name="ChoosingConverter"></a>
 ### Choosing converter

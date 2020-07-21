@@ -5,7 +5,7 @@ namespace RapidSettings.Core
     /// <summary>
     /// Provides raw setting value from environment variable.
     /// </summary>
-    public class FromEnvironmentProvider : IRawSettingsProviderSync
+    public class FromEnvironmentProvider : IRawSettingsProvider
     {
         /// <summary>
         /// Gets raw setting value from environment variable named as <paramref name="key"/>.

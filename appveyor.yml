@@ -17,7 +17,7 @@ install:
         Update-AppveyorBuild -Version "$env:APPVEYOR_REPO_TAG_NAME"
     }
 build_script:
-- cmd: dotnet build -c Release /p:SourceLinkCreate=true
+- cmd: dotnet build -c Release
 test_script:
 - cmd: dotnet test RapidSettings.Tests
 artifacts:

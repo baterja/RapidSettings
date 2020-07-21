@@ -3,7 +3,6 @@ using RapidSettings.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace RapidSettings.Tests.Attributes
 {
@@ -65,18 +64,6 @@ namespace RapidSettings.Tests.Attributes
             Assert.AreEqual(default(int), settings.SomeNonConvertibleSetting);
         }
 
-        [TestMethod]
-        public async Task SettingsFillerTest_BasicAsync()
-        {
-            var settingsFiller = this.GetBasicSettingsFiller();
-
-            var settings = await settingsFiller.CreateWithSettingsAsync<BasicSettings>();
-
-            Assert.AreEqual(1, settings.SomeSetting1);
-            Assert.AreEqual(2, settings.SomeNullableSetting2);
-            Assert.AreEqual(default(int), settings.SomeNonConvertibleSetting);
-        }
-
         private class SettingsWithUnretrievableProp
         {
             [ToFill("badKey")]
@@ -108,8 +95,6 @@ namespace RapidSettings.Tests.Attributes
         {
             var settingsFiller = this.GetAdvancedSettingsFiller();
             Environment.SetEnvironmentVariable(nameof(AdvancedSettings.SomeInt), "1");
-            Environment.SetEnvironmentVariable(nameof(AdvancedSettings.SomeWrappedInt), "2");
-            Environment.SetEnvironmentVariable(nameof(AdvancedSettings.SomeOptionalWrappedRetrievableInt), "3");
 
             var settings = settingsFiller.CreateWithSettings<AdvancedSettings>();
 
@@ -118,26 +103,6 @@ namespace RapidSettings.Tests.Attributes
             Assert.IsNotNull(settings.SomeC);
             Assert.AreEqual(1, settings.SomeInt);
             Assert.IsNull(settings.SomeOptionalInt);
-
-            Assert.IsTrue(settings.SomeWrappedInt.Metadata.HasValueSpecified);
-            Assert.IsTrue(settings.SomeWrappedInt.Metadata.IsRequired);
-            Assert.AreEqual(nameof(AdvancedSettings.SomeWrappedInt), settings.SomeWrappedInt.Metadata.Key);
-            Assert.AreEqual(2, settings.SomeWrappedInt.Value);
-
-            Assert.IsFalse(settings.SomeOptionalWrappedNonRetrievableInt.Metadata.HasValueSpecified);
-            Assert.IsFalse(settings.SomeOptionalWrappedNonRetrievableInt.Metadata.IsRequired);
-            Assert.AreEqual(nameof(AdvancedSettings.SomeOptionalWrappedNonRetrievableInt), settings.SomeOptionalWrappedNonRetrievableInt.Metadata.Key);
-            Assert.AreEqual(default(int), settings.SomeOptionalWrappedNonRetrievableInt.Value);
-
-            Assert.IsTrue(settings.SomeOptionalWrappedRetrievableInt.Metadata.HasValueSpecified);
-            Assert.IsFalse(settings.SomeOptionalWrappedRetrievableInt.Metadata.IsRequired);
-            Assert.AreEqual(nameof(AdvancedSettings.SomeOptionalWrappedRetrievableInt), settings.SomeOptionalWrappedRetrievableInt.Metadata.Key);
-            Assert.AreEqual(3, settings.SomeOptionalWrappedRetrievableInt.Value);
-
-            Assert.IsFalse(settings.SomeOptionalWrappedNullableNonRetrievableInt.Metadata.HasValueSpecified);
-            Assert.IsFalse(settings.SomeOptionalWrappedNullableNonRetrievableInt.Metadata.IsRequired);
-            Assert.AreEqual(nameof(AdvancedSettings.SomeOptionalWrappedNullableNonRetrievableInt), settings.SomeOptionalWrappedNullableNonRetrievableInt.Metadata.Key);
-            Assert.IsNull(settings.SomeOptionalWrappedNullableNonRetrievableInt.Value);
         }
 
         private class AdvancedSettings
@@ -154,20 +119,8 @@ namespace RapidSettings.Tests.Attributes
             [ToFill(rawSettingsProviderName: "env")]
             public int SomeInt { get; private set; }
 
-            [ToFill(rawSettingsProviderName: "env")]
-            public Setting<int> SomeWrappedInt { get; private set; }
-
             [ToFill(isRequired: false, rawSettingsProviderName: "env")]
             public int? SomeOptionalInt { get; private set; }
-
-            [ToFill(isRequired: false, rawSettingsProviderName: "env")]
-            public Setting<int> SomeOptionalWrappedRetrievableInt { get; private set; }
-
-            [ToFill(isRequired: false, rawSettingsProviderName: "env")]
-            public Setting<int> SomeOptionalWrappedNonRetrievableInt { get; private set; }
-
-            [ToFill(isRequired: false, rawSettingsProviderName: "env")]
-            public Setting<int?> SomeOptionalWrappedNullableNonRetrievableInt { get; private set; }
         }
 
         private class A { }
@@ -178,8 +131,8 @@ namespace RapidSettings.Tests.Attributes
         {
             public SuperConverter()
             {
-                AddSupportForTypes(typeof(A), typeof(A), (rawValue, type) => rawValue);
-                AddSupportForTypes(typeof(C), typeof(C), (rawValue, type) => rawValue);
+                this.AddSupportForTypes(typeof(A), typeof(A), (rawValue, type) => rawValue);
+                this.AddSupportForTypes(typeof(C), typeof(C), (rawValue, type) => rawValue);
             }
         }
 

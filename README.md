@@ -65,10 +65,9 @@ class SomeSettings
     public Uri Host { get; private set; }
 
     // this setting will be retrieved by key Port (default) with default provider
-    // but if its retrieval or conversion will be impossible, in Port.Value will be just a default int value (0)
-    // and in Port.Metadata there will be few informations about it
+    // but if its retrieval or conversion will be impossible, it will be just a default int value (0)
     [ToFill(isRequired: false)]
-    public Setting<int> Port { get; private set; }
+    public int Port { get; private set; }
 
     // this setting will be retrieved by key TMP with provider named ENV 
     // (which is the default key of FromEnvironmentProvider taken from SettingsFillerStaticDefaults)
@@ -94,9 +93,8 @@ Those are the steps which are usally performed by this library:
 - you prepare Providers, Converters, ConverterChooser and SettingsFiller and use it on some class with properties decorated with ```ToFill``` attribute,
 - properties decorated with ```ToFill``` attribute are collected and for each of them:
   - setting is retrieved by ```string``` key by ```IRawSettingsProvider``` which has been chosen by attribute's property of is default,
-  - target type of conversion is determined (unwrapping ```Nullable<>``` and ```Setting<>```),
+  - target type of conversion is determined (unwrapping ```Nullable<>```),
   - converter is chosen by and used by ```SettingsConverterChooser```,
-  - (optional) if setting is wrapped in ```Setting<>```, ```SettingMetadata``` are created,
   - result of conversion is assigned to target property.
 
 And this is how you can adjust specific steps to your needs:
@@ -111,7 +109,7 @@ There you can set 3 things:
 <a name="Retrieval"></a>
 ### Retrieval
 Settings in "raw" form are provided by ```IRawSettingsProvider``` with method ```GetRawSetting``` taking ```string``` key as parameter and returning some ```object```. Implementations of those interfaces provided by library are:
-- ```FromIConfigurationProvider``` which needs to be created with ```IConfiguration``` instance to use,
+- ```FromIConfigurationProvider``` which needs to be created with ```IConfiguration``` instance to use - that's probably the one you need for .NET Core,
 - ```FromAppSettingsProvider``` which uses ```ConfigurationManager.AppSettings.Get()```,
 - ```FromEnvironmentProvider``` which uses ```Environment.GetEnvironmentVariable()```,
 - ```FromFuncProvider``` - parameterizable provider which is just using ```Invoke()``` on ```Func<string, object>``` which it get in constructor,

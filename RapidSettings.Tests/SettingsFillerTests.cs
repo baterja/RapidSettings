@@ -79,6 +79,22 @@ namespace RapidSettings.Tests.Attributes
             var settings = settingsFiller.CreateWithSettings<SettingsWithUnretrievableProp>();
         }
 
+        private class SettingsWithoutSetterOnProperty
+        {
+            [ToFill("whatever")]
+            public int SomeSetting1 { get; }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(RapidSettingsException))]
+        public void SettingsFillerTest_NoSetterForDecoratedProperty()
+        {
+            var settingsFiller = this.GetBasicSettingsFiller();
+
+            var settings = settingsFiller.CreateWithSettings<SettingsWithoutSetterOnProperty>();
+        }
+
+
         private SettingsFiller GetBasicSettingsFiller()
         {
             var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });

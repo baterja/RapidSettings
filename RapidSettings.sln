@@ -7,10 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RapidSettings", "RapidSetti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RapidSettings.Tests", "RapidSettings.Tests\RapidSettings.Tests.csproj", "{40658081-EE70-44E5-A25E-36A3383DF289}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RapidSettings.Converters", "RapidSettings.Converters\RapidSettings.Converters.csproj", "{3A3B56F6-8555-4EA2-B78D-EE14D377F633}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{41A849FD-5B27-4B1E-BDF8-FA2C9525A09F}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		appveyor.yml = appveyor.yml
 		LICENSE = LICENSE
 		README.md = README.md
@@ -18,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RapidSettings.Example", "RapidSettings.Example\RapidSettings.Example.csproj", "{0376BFDA-EDE7-461A-9076-C2DCC0CE5AB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RapidSettings.Example.NetCore", "RapidSettings.Example.NetCore\RapidSettings.Example.NetCore.csproj", "{6BE4CFB5-1DAA-45AF-BDA6-7ED86D2FF00E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RapidSettings.Example.NetCore", "RapidSettings.Example.NetCore\RapidSettings.Example.NetCore.csproj", "{6BE4CFB5-1DAA-45AF-BDA6-7ED86D2FF00E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,10 +33,6 @@ Global
 		{40658081-EE70-44E5-A25E-36A3383DF289}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40658081-EE70-44E5-A25E-36A3383DF289}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40658081-EE70-44E5-A25E-36A3383DF289}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3A3B56F6-8555-4EA2-B78D-EE14D377F633}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3A3B56F6-8555-4EA2-B78D-EE14D377F633}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3A3B56F6-8555-4EA2-B78D-EE14D377F633}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3A3B56F6-8555-4EA2-B78D-EE14D377F633}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0376BFDA-EDE7-461A-9076-C2DCC0CE5AB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0376BFDA-EDE7-461A-9076-C2DCC0CE5AB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0376BFDA-EDE7-461A-9076-C2DCC0CE5AB7}.Release|Any CPU.ActiveCfg = Release|Any CPU

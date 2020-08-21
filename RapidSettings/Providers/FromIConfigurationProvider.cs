@@ -1,6 +1,7 @@
 ﻿#if NETSTANDARD2_0 || NET47
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace RapidSettings.Core
@@ -11,18 +12,18 @@ namespace RapidSettings.Core
     public class FromIConfigurationProvider : IRawSettingsProvider
     {
         /// <summary>
-        /// Source <see cref="IConfiguration"/> of this provider's instance.
-        /// </summary>
-        public IConfiguration Configuration { get; }
-
-        /// <summary>
         /// Initializes a new instance of <see cref="FromIConfigurationProvider"/> class.
         /// </summary>
         /// <param name="configuration"><see cref="IConfiguration"/> which will be used as a source of raw values by <see cref="GetRawSetting(string)"/>.</param>
         public FromIConfigurationProvider(IConfiguration configuration)
         {
-            this.Configuration = configuration ?? throw new RapidSettingsException($"{nameof(configuration)} cannot be null or empty!"); ;
+            this.Configuration = configuration ?? throw new RapidSettingsException($"{nameof(configuration)} cannot be null or empty!");
         }
+
+        /// <summary>
+        /// Source <see cref="IConfiguration"/> of this provider's instance.
+        /// </summary>
+        public IConfiguration Configuration { get; }
 
         /// <summary>
         /// Gets raw setting value from <see cref="Configuration"/> by given string <paramref name="key"/>.
@@ -85,16 +86,16 @@ namespace RapidSettings.Core
         {
             retrievedDict = rootSection
                 .GetChildren()
-                .ToDictionary(subSection => subSection.Key, subSection => GetValue(subSection));
+                .ToDictionary(subSection => subSection.Key, GetValue);
 
-            return retrievedDict.Any();
+            return retrievedDict.Count > 0;
         }
 
         private static bool TryConvertDictToList(IReadOnlyDictionary<string, object> dict, out IReadOnlyList<object> convertedList)
         {
             var listKeysSequence = Enumerable
                 .Range(0, dict.Keys.Count())
-                .Select(index => index.ToString());
+                .Select(index => index.ToString(CultureInfo.InvariantCulture));
 
             if (dict.Keys.SequenceEqual(listKeysSequence))
             {

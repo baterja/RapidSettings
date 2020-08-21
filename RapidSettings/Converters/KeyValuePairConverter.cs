@@ -30,6 +30,16 @@ namespace RapidSettings.Core
         /// <returns>Should return true if both <paramref name="fromType"/> and <paramref name="toType"/> are <see cref="KeyValuePair{TKey, TValue}"/></returns>
         public bool CanConvert(Type fromType, Type toType)
         {
+            if (fromType is null)
+            {
+                throw new ArgumentNullException(nameof(fromType));
+            }
+
+            if (toType is null)
+            {
+                throw new ArgumentNullException(nameof(toType));
+            }
+
             var isTargetTypeKvp = toType.IsGenericType && toType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>);
             var isSourceTypeKvp = fromType.IsGenericType && fromType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>);
 
@@ -37,28 +47,38 @@ namespace RapidSettings.Core
         }
 
         /// <summary>
-        /// Uses <see cref="settingsConverterChooser"/> received in the constructor to convert underlaying key and value of <paramref name="rawKeyValuePair"/> 
+        /// Uses <see cref="settingsConverterChooser"/> received in the constructor to convert underlaying key and value of <paramref name="rawValue"/>
         /// to types of key and value of <typeparamref name="TTo"/> (which also have to be of type <see cref="KeyValuePair{TKey, TValue}"/>).
         /// </summary>
-        /// <typeparam name="TFrom">Type from which <paramref name="rawKeyValuePair"/> should be converted.</typeparam>
-        /// <typeparam name="TTo">Type to which <paramref name="rawKeyValuePair"/> should be converted.</typeparam>
-        /// <param name="rawKeyValuePair">Value (possibly) convertible to <typeparamref name="TTo"/>.</param>
-        /// <returns><typeparamref name="TTo"/> converted from <paramref name="rawKeyValuePair"/> or exception if it was impossible.</returns>
-        public TTo Convert<TFrom, TTo>(TFrom rawKeyValuePair)
+        /// <typeparam name="TFrom">Type from which <paramref name="rawValue"/> should be converted.</typeparam>
+        /// <typeparam name="TTo">Type to which <paramref name="rawValue"/> should be converted.</typeparam>
+        /// <param name="rawValue">Value (possibly) convertible to <typeparamref name="TTo"/>.</param>
+        /// <returns><typeparamref name="TTo"/> converted from <paramref name="rawValue"/> or exception if it was impossible.</returns>
+        public TTo Convert<TFrom, TTo>(TFrom rawValue)
         {
             var targetType = typeof(TTo);
             var targetKeyValuePairGenericArguments = targetType.GetGenericArguments();
             var targetKeyType = targetKeyValuePairGenericArguments[0];
             var targetValueType = targetKeyValuePairGenericArguments[1];
 
-            var sourceKeyValuePairType = this.GetSourceKeyValuePairType(rawKeyValuePair);
+            var sourceKeyValuePairType = GetSourceKeyValuePairType(rawValue);
 
-            var key = this.ConvertKey(sourceKeyValuePairType, rawKeyValuePair, targetKeyType);
-            var value = this.ConvertValue(sourceKeyValuePairType, rawKeyValuePair, targetValueType);
+            var key = this.ConvertKey(sourceKeyValuePairType, rawValue, targetKeyType);
+            var value = this.ConvertValue(sourceKeyValuePairType, rawValue, targetValueType);
 
             var targetKeyValuePairType = typeof(KeyValuePair<,>).MakeGenericType(targetKeyType, targetValueType);
             var keyValuePair = Activator.CreateInstance(targetKeyValuePairType, key, value);
             return (TTo)keyValuePair;
+        }
+
+        private static Type GetSourceKeyValuePairType(object rawKeyValuePair)
+        {
+            var sourceKeyValuePairGenericArguments = rawKeyValuePair.GetType().GetGenericArguments();
+            var sourceKeyType = sourceKeyValuePairGenericArguments[0];
+            var sourceValueType = sourceKeyValuePairGenericArguments[1];
+            var sourceKeyValuePairType = typeof(KeyValuePair<,>).MakeGenericType(sourceKeyType, sourceValueType);
+
+            return sourceKeyValuePairType;
         }
 
         private object ConvertKey(Type sourceKeyValuePairType, object rawKeyValuePair, Type targetKeyType)
@@ -79,16 +99,6 @@ namespace RapidSettings.Core
             var convertedPropertyValue = convertGenericMethod.Invoke(this.settingsConverterChooser, new[] { rawPropertyValue });
 
             return convertedPropertyValue;
-        }
-
-        private Type GetSourceKeyValuePairType(object rawKeyValuePair)
-        {
-            var sourceKeyValuePairGenericArguments = rawKeyValuePair.GetType().GetGenericArguments();
-            var sourceKeyType = sourceKeyValuePairGenericArguments[0];
-            var sourceValueType = sourceKeyValuePairGenericArguments[1];
-            var sourceKeyValuePairType = typeof(KeyValuePair<,>).MakeGenericType(sourceKeyType, sourceValueType);
-
-            return sourceKeyValuePairType;
         }
     }
 }

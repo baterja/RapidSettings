@@ -30,29 +30,39 @@ namespace RapidSettings.Core
         /// </summary>
         /// <param name="fromType">Type from which support should be checked.</param>
         /// <param name="toType">Type to which support should be checked.</param>
-        /// <returns>Should return true if <paramref name="fromType"/> is <see cref="IEnumerable{T}"/> 
+        /// <returns>Should return true if <paramref name="fromType"/> is <see cref="IEnumerable{T}"/>
         /// and <see cref="List{T}"/>, <see cref="HashSet{T}"/> or <see cref="Dictionary{TKey, TValue}"/> is assignable to <paramref name="toType"/>.</returns>
         public bool CanConvert(Type fromType, Type toType)
         {
-            var isSourceTypeGenericIEnumerable = this.IsOrInheritsGenericIEnumerable(fromType, out _);
+            if (fromType is null)
+            {
+                throw new ArgumentNullException(nameof(fromType));
+            }
+
+            if (toType is null)
+            {
+                throw new ArgumentNullException(nameof(toType));
+            }
+
+            var isSourceTypeGenericIEnumerable = IsOrInheritsGenericIEnumerable(fromType, out _);
             if (!isSourceTypeGenericIEnumerable)
             {
                 return false;
             }
 
-            var isTargetTypeGenericIEnumerable = this.IsOrInheritsGenericIEnumerable(toType, out var targetEnumerableUnderlayingType);
+            var isTargetTypeGenericIEnumerable = IsOrInheritsGenericIEnumerable(toType, out var targetEnumerableUnderlayingType);
             if (!isTargetTypeGenericIEnumerable)
             {
                 return false;
             }
 
-            var canCreateTypeAssignableToTarget = this.GetAssignableCollectionFactory(toType, targetEnumerableUnderlayingType) != null;
+            var canCreateTypeAssignableToTarget = GetAssignableCollectionFactory(toType, targetEnumerableUnderlayingType) != null;
             return canCreateTypeAssignableToTarget;
         }
 
         /// <summary>
-        /// Uses <see cref="settingsConverterChooser"/> received in the constructor to convert elements of <paramref name="rawValue"/> 
-        /// to underlaying type of <typeparamref name="TTo"/> and creates <see cref="List{T}"/>, <see cref="HashSet{T}"/> or 
+        /// Uses <see cref="settingsConverterChooser"/> received in the constructor to convert elements of <paramref name="rawValue"/>
+        /// to underlaying type of <typeparamref name="TTo"/> and creates <see cref="List{T}"/>, <see cref="HashSet{T}"/> or
         /// <see cref="Dictionary{TKey, TValue}"/> (whichever is assignable to <typeparamref name="TTo"/>) filled with those values.
         /// </summary>
         /// <typeparam name="TFrom">Type from which <paramref name="rawValue"/> should be converted.</typeparam>
@@ -61,7 +71,7 @@ namespace RapidSettings.Core
         /// <returns><typeparamref name="TTo"/> converted from <paramref name="rawValue"/> or exception if it was impossible.</returns>
         public TTo Convert<TFrom, TTo>(TFrom rawValue)
         {
-            if (!this.IsOrInheritsGenericIEnumerable(typeof(TTo), out var targetEnumerableUnderlayingType))
+            if (!IsOrInheritsGenericIEnumerable(typeof(TTo), out var targetEnumerableUnderlayingType))
             {
                 throw new RapidSettingsException($"{nameof(EnumerableConverter)} is unable to convert to type {typeof(TTo).Name} as it doesn't implement generic IEnumerable<>!");
             }
@@ -69,26 +79,14 @@ namespace RapidSettings.Core
             var enumerableRawValues = (IEnumerable)rawValue;
             var convertedValues = this.ConvertValues(enumerableRawValues, targetEnumerableUnderlayingType);
 
-            var collection = this.CreateSimilarCollection(typeof(TTo), targetEnumerableUnderlayingType, convertedValues);
+            var collection = CreateSimilarCollection(typeof(TTo), targetEnumerableUnderlayingType, convertedValues);
 
             return (TTo)collection;
         }
 
-        private IList ConvertValues(IEnumerable rawValues, Type targetEnumerableUnderlayingType)
+        private static IEnumerable CreateSimilarCollection(Type targetCollectionType, Type targetEnumerableUnderlayingType, IList convertedValues)
         {
-            var convertedList = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(targetEnumerableUnderlayingType));
-            foreach (var rawValue in rawValues)
-            {
-                var convertGenericMethod = this.convertMethod.MakeGenericMethod(rawValue.GetType(), targetEnumerableUnderlayingType);
-                convertedList.Add(convertGenericMethod.Invoke(this.settingsConverterChooser, new[] { rawValue }));
-            }
-
-            return convertedList;
-        }
-
-        private IEnumerable CreateSimilarCollection(Type targetCollectionType, Type targetEnumerableUnderlayingType, IList convertedValues)
-        {
-            var assignableCollectionFactory = this.GetAssignableCollectionFactory(targetCollectionType, targetEnumerableUnderlayingType);
+            var assignableCollectionFactory = GetAssignableCollectionFactory(targetCollectionType, targetEnumerableUnderlayingType);
             if (assignableCollectionFactory == null)
             {
                 var errorMessage = $"{nameof(EnumerableConverter)} is unable to create type of collection assignable to target collection type which is: {targetCollectionType.Name}." +
@@ -99,7 +97,7 @@ namespace RapidSettings.Core
             return assignableCollectionFactory(convertedValues);
         }
 
-        private Func<IList, IEnumerable> GetAssignableCollectionFactory(Type targetCollectionType, Type targetEnumerableUnderlayingType)
+        private static Func<IList, IEnumerable> GetAssignableCollectionFactory(Type targetCollectionType, Type targetEnumerableUnderlayingType)
         {
             if (targetCollectionType.IsAssignableFrom(typeof(List<>).MakeGenericType(targetEnumerableUnderlayingType)))
             {
@@ -119,7 +117,7 @@ namespace RapidSettings.Core
                 return values => (IEnumerable)hashSetConstructor.Invoke(new[] { values });
             }
 
-            if (targetEnumerableUnderlayingType.IsGenericType 
+            if (targetEnumerableUnderlayingType.IsGenericType
                 && targetEnumerableUnderlayingType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
             {
                 var keyValuePairGenericArguments = targetEnumerableUnderlayingType.GetGenericArguments();
@@ -128,7 +126,9 @@ namespace RapidSettings.Core
                     var dictType = typeof(Dictionary<,>).MakeGenericType(targetCollectionType.GetGenericArguments());
                     var dictConstructor = dictType.GetConstructor(Type.EmptyTypes);
 
+#pragma warning disable CA1825 // Easiest way working with all target frameworks
                     var dict = dictConstructor.Invoke(new object[0]);
+#pragma warning restore CA1825 // Avoid zero-length array allocations
                     var addMethod = dictType.GetMethod(nameof(Dictionary<object, object>.Add));
 
                     var keyProperty = targetEnumerableUnderlayingType.GetProperty(nameof(KeyValuePair<object, object>.Key));
@@ -151,7 +151,7 @@ namespace RapidSettings.Core
             return null;
         }
 
-        private bool IsOrInheritsGenericIEnumerable(Type type, out Type enumerableUnderlayingType)
+        private static bool IsOrInheritsGenericIEnumerable(Type type, out Type enumerableUnderlayingType)
         {
             var ienumerableType = typeof(IEnumerable<>);
             if (type.IsInterface && type.IsGenericType && type.GetGenericTypeDefinition() == ienumerableType)
@@ -166,6 +166,18 @@ namespace RapidSettings.Core
                 ?.GetGenericArguments()
                 .Single();
             return enumerableUnderlayingType != null;
+        }
+
+        private IList ConvertValues(IEnumerable rawValues, Type targetEnumerableUnderlayingType)
+        {
+            var convertedList = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(targetEnumerableUnderlayingType));
+            foreach (var rawValue in rawValues)
+            {
+                var convertGenericMethod = this.convertMethod.MakeGenericMethod(rawValue.GetType(), targetEnumerableUnderlayingType);
+                convertedList.Add(convertGenericMethod.Invoke(this.settingsConverterChooser, new[] { rawValue }));
+            }
+
+            return convertedList;
         }
     }
 }

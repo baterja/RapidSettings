@@ -8,10 +8,21 @@ namespace RapidSettings.Core
     /// </summary>
     public static class SettingsFillerStaticDefaults
     {
+        /// <summary>
+        /// Key by which <see cref="FromAppSettingsProvider"/> is registered by default (if <see cref="SettingsFiller(ISettingsConverterChooser, IDictionary{string, IRawSettingsProvider}, IRawSettingsProvider)"/> constructor is used without specifying providers).
+        /// </summary>
+        public const string FromAppSettingsProviderKey = "AppSettings";
+
+        /// <summary>
+        /// Key by which <see cref="FromEnvironmentProvider"/> is registered by default (if <see cref="SettingsFiller(ISettingsConverterChooser, IDictionary{string, IRawSettingsProvider}, IRawSettingsProvider)"/> constructor is used without specifying providers).
+        /// </summary>
+        public const string FromEnvironmentProviderKey = "ENV";
+
         static SettingsFillerStaticDefaults()
         {
             DefaultSettingsConverterChooser = new SettingsConverterChooser(Enumerable.Empty<IRawSettingsConverter>());
-            DefaultRawSettingsConverters = new HashSet<IRawSettingsConverter> {
+            DefaultRawSettingsConverters = new HashSet<IRawSettingsConverter>
+            {
                 new StringToFrameworkTypesConverter(),
                 new EnumerableConverter(DefaultSettingsConverterChooser),
                 new KeyValuePairConverter(DefaultSettingsConverterChooser),
@@ -25,19 +36,9 @@ namespace RapidSettings.Core
         }
 
         /// <summary>
-        /// Key by which <see cref="FromAppSettingsProvider"/> is registered by default (if <see cref="SettingsFiller(ISettingsConverterChooser, IDictionary{string, IRawSettingsProvider}, IRawSettingsProvider)"/> constructor is used without specifying providers).
-        /// </summary>
-        public const string FromAppSettingsProviderKey = "AppSettings";
-
-        /// <summary>
         /// Instance of <see cref="Core.FromAppSettingsProvider"/> which is passed by default to <see cref="SettingsFiller(ISettingsConverterChooser, IDictionary{string, IRawSettingsProvider}, IRawSettingsProvider)"/> constructor if it's used without specifying providers.
         /// </summary>
         public static FromAppSettingsProvider FromAppSettingsProvider { get; } = new FromAppSettingsProvider();
-
-        /// <summary>
-        /// Key by which <see cref="FromEnvironmentProvider"/> is registered by default (if <see cref="SettingsFiller(ISettingsConverterChooser, IDictionary{string, IRawSettingsProvider}, IRawSettingsProvider)"/> constructor is used without specifying providers).
-        /// </summary>
-        public const string FromEnvironmentProviderKey = "ENV";
 
         /// <summary>
         /// Instance of <see cref="Core.FromEnvironmentProvider"/> which is passed by default to <see cref="SettingsFiller(ISettingsConverterChooser, IDictionary{string, IRawSettingsProvider}, IRawSettingsProvider)"/> constructor if it's used without specifying providers.
@@ -45,7 +46,7 @@ namespace RapidSettings.Core
         public static FromEnvironmentProvider FromEnvironmentProvider { get; } = new FromEnvironmentProvider();
 
         /// <summary>
-        /// Default converters which are used to construct <see cref="DefaultSettingsConverterChooser"/>. By default, there are: 
+        /// Default converters which are used to construct <see cref="DefaultSettingsConverterChooser"/>. By default, there are:
         /// <see cref="StringToFrameworkTypesConverter"/>, <see cref="EnumerableConverter"/>, <see cref="KeyValuePairConverter"/> and <see cref="NullableConverter"/>.
         /// </summary>
         public static ISet<IRawSettingsConverter> DefaultRawSettingsConverters { get; }
@@ -66,9 +67,10 @@ namespace RapidSettings.Core
         /// Raw settings providers which are passed by default to <see cref="SettingsFiller(ISettingsConverterChooser, IDictionary{string, IRawSettingsProvider}, IRawSettingsProvider)"/> constructor if it's used without specifying providers.
         /// Consists of <see cref="FromAppSettingsProvider"/> and <see cref="FromEnvironmentProvider"/>.
         /// </summary>
-        public static IDictionary<string, IRawSettingsProvider> DefaultRawSettingsProviders { get; } = new Dictionary<string, IRawSettingsProvider> {
-            { FromAppSettingsProviderKey, FromAppSettingsProvider},
-            { FromEnvironmentProviderKey, FromEnvironmentProvider}
+        public static IDictionary<string, IRawSettingsProvider> DefaultRawSettingsProviders { get; } = new Dictionary<string, IRawSettingsProvider>
+        {
+            { FromAppSettingsProviderKey, FromAppSettingsProvider },
+            { FromEnvironmentProviderKey, FromEnvironmentProvider },
         };
     }
 }

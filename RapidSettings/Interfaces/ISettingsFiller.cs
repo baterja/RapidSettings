@@ -1,4 +1,6 @@
-﻿namespace RapidSettings.Core
+﻿using System;
+
+namespace RapidSettings.Core
 {
     /// <summary>
     /// Interface for a class which fills members decorated <see cref="ToFillAttribute"/> of given class instance.
@@ -20,8 +22,15 @@
         /// <summary>
         /// Creates new instance of a class <typeparamref name="T"/> and fill its members which are decorated with <see cref="ToFillAttribute"/>.
         /// </summary>
-        public static T CreateWithSettings<T>(this ISettingsFiller settingsFiller) where T : new()
+        /// <param name="settingsFiller">Filler to use.</param>
+        public static T CreateWithSettings<T>(this ISettingsFiller settingsFiller)
+            where T : new()
         {
+            if (settingsFiller is null)
+            {
+                throw new ArgumentNullException(nameof(settingsFiller));
+            }
+
             var settingsClass = new T();
             settingsFiller.FillSettings(settingsClass);
             return settingsClass;

@@ -11,7 +11,6 @@ namespace RapidSettings.Core
         private readonly ISettingsConverterChooser settingsConverterChooser;
         private readonly MethodInfo convertMethod;
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="NullableConverter"/> class.
         /// </summary>
@@ -34,7 +33,7 @@ namespace RapidSettings.Core
         }
 
         /// <summary>
-        /// Uses <see cref="settingsConverterChooser"/> received in the constructor to convert underlaying value of <paramref name="rawValue"/> 
+        /// Uses <see cref="settingsConverterChooser"/> received in the constructor to convert underlaying value of <paramref name="rawValue"/>
         /// to <typeparamref name="TTo"/>.
         /// </summary>
         /// <typeparam name="TFrom">Type from which <paramref name="rawValue"/> should be converted.</typeparam>

@@ -19,7 +19,8 @@ namespace RapidSettings.Core
         /// Initializes a new instance of the <see cref="RapidSettingsException"/> class with exception description.
         /// </summary>
         /// <param name="message">Exception description.</param>
-        public RapidSettingsException(string message) : base(message)
+        public RapidSettingsException(string message)
+            : base(message)
         { }
 
         /// <summary>
@@ -27,7 +28,8 @@ namespace RapidSettings.Core
         /// </summary>
         /// <param name="message">Exception description.</param>
         /// <param name="inner">Inner exception.</param>
-        public RapidSettingsException(string message, Exception inner) : base(message, inner)
+        public RapidSettingsException(string message, Exception inner)
+            : base(message, inner)
         { }
 
         /// <summary>
@@ -35,7 +37,8 @@ namespace RapidSettings.Core
         /// </summary>
         /// <param name="info">Data for deserialization.</param>
         /// <param name="context">Contains source and target of streaming and may contains additional info for deserialization.</param>
-        protected RapidSettingsException(SerializationInfo info, StreamingContext context) : base(info, context)
+        protected RapidSettingsException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         { }
     }
 }

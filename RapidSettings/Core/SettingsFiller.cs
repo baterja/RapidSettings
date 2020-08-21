@@ -16,24 +16,13 @@ namespace RapidSettings.Core
         public const string DefaultRawSettingsProviderKey = "###DEFAULT###";
 
         /// <summary>
-        /// Settings providers by their names.
-        /// </summary>
-        public IDictionary<string, IRawSettingsProvider> RawSettingsProvidersByNames { get; }
-
-        /// <summary>
-        /// Converter chooser which will be used to choose converters which will be used for conversion ~ capt. Obvious.
-        /// </summary>
-        public ISettingsConverterChooser SettingsConverterChooser { get; }
-
-        /// <summary>
         /// Initializes a new instance of <see cref="SettingsFiller"/> class with converter chooser and default raw settings provider. Any parameter left with null will default to values from <see cref="SettingsFillerStaticDefaults"/>.
         /// </summary>
         public SettingsFiller(ISettingsConverterChooser settingsConverterChooser = null, IRawSettingsProvider defaultRawSettingsProvider = null)
             : this(
                   settingsConverterChooser ?? SettingsFillerStaticDefaults.DefaultSettingsConverterChooser,
                   defaultRawSettingsProvider == null ? new Dictionary<string, IRawSettingsProvider>(SettingsFillerStaticDefaults.DefaultRawSettingsProviders) : new Dictionary<string, IRawSettingsProvider> { { DefaultRawSettingsProviderKey, defaultRawSettingsProvider } },
-                  defaultRawSettingsProvider ?? SettingsFillerStaticDefaults.DefaultDefaultRawSettingsProvider
-              )
+                  defaultRawSettingsProvider ?? SettingsFillerStaticDefaults.DefaultDefaultRawSettingsProvider)
         { }
 
         /// <summary>
@@ -43,7 +32,7 @@ namespace RapidSettings.Core
         {
             this.SettingsConverterChooser = settingsConverterChooser ?? throw new RapidSettingsException($"{nameof(settingsConverterChooser)} cannot be null!");
 
-            if (rawSettingsProvidersByNames == null || !rawSettingsProvidersByNames.Any())
+            if (rawSettingsProvidersByNames == null || rawSettingsProvidersByNames.Count == 0)
             {
                 throw new RapidSettingsException($"{nameof(rawSettingsProvidersByNames)} cannot be null or empty!");
             }
@@ -57,18 +46,45 @@ namespace RapidSettings.Core
         }
 
         /// <summary>
-        /// Fills <paramref name="objectWithDecoratedProps"/> properties decorated with <see cref="ToFillAttribute"/>.
+        /// Settings providers by their names.
         /// </summary>
-        public void FillSettings<T>(T objectWithDecoratedProps)
+        public IDictionary<string, IRawSettingsProvider> RawSettingsProvidersByNames { get; }
+
+        /// <summary>
+        /// Converter chooser which will be used to choose converters which will be used for conversion ~ capt. Obvious.
+        /// </summary>
+        public ISettingsConverterChooser SettingsConverterChooser { get; }
+
+        /// <summary>
+        /// Fills <paramref name="objectToFill"/> properties decorated with <see cref="ToFillAttribute"/>.
+        /// </summary>
+        public void FillSettings<T>(T objectToFill)
         {
-            var propertiesToFill = this.GetPropertiesToFill(typeof(T));
+            var propertiesToFill = GetPropertiesToFill(typeof(T));
             foreach (var propToFill in propertiesToFill)
             {
-                this.ValidateIfPropertyIsFillable(propToFill);
+                ValidateIfPropertyIsFillable(propToFill);
 
                 var setting = this.ResolveSetting(propToFill);
-                propToFill.SetValue(objectWithDecoratedProps, setting);
+                propToFill.SetValue(objectToFill, setting);
             }
+        }
+
+        private static void ValidateIfPropertyIsFillable(PropertyInfo propertyToFill)
+        {
+            if (!propertyToFill.CanWrite)
+            {
+                throw new RapidSettingsException($"Property {propertyToFill.Name} on type {propertyToFill.DeclaringType} doesn't have a setter!");
+            }
+        }
+
+        private static IEnumerable<PropertyInfo> GetPropertiesToFill(Type typeOfObjectToFill)
+        {
+            var propertiesToFill = typeOfObjectToFill
+                .GetProperties()
+                .Where(prop => prop.IsDefined(typeof(ToFillAttribute), true));
+
+            return propertiesToFill;
         }
 
         private object ResolveSetting(PropertyInfo propToFill)
@@ -135,23 +151,6 @@ namespace RapidSettings.Core
             }
 
             return this.RawSettingsProvidersByNames[requestedRawSettingsProviderName];
-        }
-
-        private void ValidateIfPropertyIsFillable(PropertyInfo propertyToFill)
-        {
-            if (!propertyToFill.CanWrite)
-            {
-                throw new RapidSettingsException($"Property {propertyToFill.Name} on type {propertyToFill.DeclaringType} doesn't have a setter!");
-            }
-        }
-
-        private IEnumerable<PropertyInfo> GetPropertiesToFill(Type typeOfObjectToFill)
-        {
-            var propertiesToFill = typeOfObjectToFill
-                .GetProperties()
-                .Where(prop => prop.IsDefined(typeof(ToFillAttribute), true));
-
-            return propertiesToFill;
         }
     }
 }

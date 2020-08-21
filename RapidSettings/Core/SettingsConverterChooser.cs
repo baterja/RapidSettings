@@ -24,13 +24,12 @@ namespace RapidSettings.Core
         public ICollection<IRawSettingsConverter> Converters { get; } = new List<IRawSettingsConverter>();
 
         /// <summary>
-        /// Chooses converter which <see cref="IRawSettingsConverter.CanConvert(Type, Type)"/> from <typeparamref name="TFrom"/> to <typeparamref name="TTo"/> 
+        /// Chooses converter which <see cref="IRawSettingsConverter.CanConvert(Type, Type)"/> from <typeparamref name="TFrom"/> to <typeparamref name="TTo"/>
         /// and returns result of its application on <paramref name="rawValue"/>.
         /// </summary>
         /// <typeparam name="TFrom">Type from which <paramref name="rawValue"/> should be converted.</typeparam>
         /// <typeparam name="TTo">Type to which <paramref name="rawValue"/> should be converted.</typeparam>
         /// <param name="rawValue">Raw value that needs conversion to type <typeparamref name="TTo"/>.</param>
-        /// <returns></returns>
         public TTo ChooseAndConvert<TFrom, TTo>(TFrom rawValue)
         {
             return (TTo)this.ChooseAndConvert(rawValue, typeof(TFrom), typeof(TTo));

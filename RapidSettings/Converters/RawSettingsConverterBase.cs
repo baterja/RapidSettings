@@ -10,7 +10,7 @@ namespace RapidSettings.Core
     public abstract class RawSettingsConverterBase : IRawSettingsConverter
     {
         /// <summary>
-        /// Dictionary of funcs that will be used to convert raw values from and to given type (but as <see cref="object"/>). 
+        /// Dictionary of funcs that will be used to convert raw values from and to given type (but as <see cref="object"/>).
         /// Type from and to which raw value should be converted should be given as key. Additionally type to which it should convert should be added as second func argument.
         /// </summary>
         protected IDictionary<(Type FromType, Type ToType), Func<object, Type, object>> ConvertingFuncs { get; } = new Dictionary<(Type FromType, Type ToType), Func<object, Type, object>>();
@@ -65,7 +65,9 @@ namespace RapidSettings.Core
             try
             {
                 var convertingFunc = this.GetConvertingFunc<TFrom, TTo>();
+#pragma warning disable S1905 // It's not redundant
                 value = (TTo)(object)convertingFunc((TFrom)rawValue, underlayingType);
+#pragma warning restore S1905 // Redundant casts should not be used
             }
             catch (Exception e)
             {
@@ -80,7 +82,7 @@ namespace RapidSettings.Core
         /// </summary>
         /// <typeparam name="TFrom">Type from which value should be converted.</typeparam>
         /// <typeparam name="TTo">Type to which value should be converted.</typeparam>
-        /// <returns>Should return proper func if there is any which can convert from type to which <typeparamref name="TFrom"/> is assignable 
+        /// <returns>Should return proper func if there is any which can convert from type to which <typeparamref name="TFrom"/> is assignable
         /// to type which is assignable to <typeparamref name="TTo"/>.</returns>
         protected virtual Func<object, Type, object> GetConvertingFunc<TFrom, TTo>()
         {
@@ -101,6 +103,21 @@ namespace RapidSettings.Core
         /// <param name="convertingFunc">Function that will be used to convert raw value of type <paramref name="fromType"/> to type <paramref name="toType"/> (but as <see cref="object"/>).</param>
         protected void AddSupportForTypes(Type fromType, Type toType, Func<object, Type, object> convertingFunc)
         {
+            if (fromType is null)
+            {
+                throw new ArgumentNullException(nameof(fromType));
+            }
+
+            if (toType is null)
+            {
+                throw new ArgumentNullException(nameof(toType));
+            }
+
+            if (convertingFunc is null)
+            {
+                throw new ArgumentNullException(nameof(convertingFunc));
+            }
+
             this.ConvertingFuncs.Add((fromType, toType), convertingFunc);
 
             if (!this.SupportedConversions.ContainsKey(fromType))

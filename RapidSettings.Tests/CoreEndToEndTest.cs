@@ -33,7 +33,6 @@ namespace RapidSettings.Tests
 
             [ToFill]
             public Dictionary<string, Dictionary<string, Dictionary<string, List<int>>>> TestComplexDict { get; private set; }
-
         }
 
         [TestMethod]
@@ -55,23 +54,26 @@ namespace RapidSettings.Tests
             var expectedList = new List<long> { 1, 2, 3 };
             CollectionAssert.AreEqual(expectedList, settings.TestList.ToList());
 
-            var expectedKvps = new KeyValuePair<string, int>[] {
+            var expectedKvps = new KeyValuePair<string, int>[]
+            {
                 new KeyValuePair<string, int>("A", 1),
                 new KeyValuePair<string, int>("B", 2),
             };
-            Assert.IsTrue(!settings.TestDict.ToList().Except(expectedKvps).Any());
+            Assert.IsTrue(!settings.TestDict.Except(expectedKvps).Any());
 
             var expectedDict = new Dictionary<string, Dictionary<string, Dictionary<string, List<int>>>>
             {
-                { "A", new Dictionary<string, Dictionary<string, List<int>>> {
-                    { "B", new Dictionary<string, List<int>> {
-                        { "C", new List<int> { 1, 2, 3 } },
-                    }},
-                    { "B1", new Dictionary<string, List<int>>
+                {
+                    "A", new Dictionary<string, Dictionary<string, List<int>>>
+                {
                     {
-                        { "C1", new List<int> { 4, 5, 6 } },
-                    }},
-                }},
+                        "B", new Dictionary<string, List<int>> { { "C", new List<int> { 1, 2, 3 } } }
+                    },
+                    {
+                        "B1", new Dictionary<string, List<int>> { { "C1", new List<int> { 4, 5, 6 } } }
+                    },
+                }
+                },
             };
 
             var expectedDictJson = JsonSerializer.Serialize(expectedDict);

@@ -49,7 +49,7 @@ namespace RapidSettings.Tests.Converters
         [TestMethod]
         public void NumericSimpleFrameworkStructsTest()
         {
-            var settingsFiller = this.GetSettingsFiller();
+            var settingsFiller = GetSettingsFiller();
 
             var settings = settingsFiller.CreateWithSettings<NumericFrameworkTypesSettings>();
 
@@ -62,8 +62,8 @@ namespace RapidSettings.Tests.Converters
             Assert.AreEqual(1, settings.Int1);
             Assert.AreEqual(1, settings.Sbyte1);
             Assert.AreEqual(1, settings.Short1);
-            Assert.AreEqual((uint)1, settings.Uint1);
-            Assert.AreEqual((ulong)1, settings.Ulong1);
+            Assert.AreEqual(1U, settings.Uint1);
+            Assert.AreEqual(1UL, settings.Ulong1);
             Assert.AreEqual((ushort)1, settings.Ushort1);
             #endregion
         }
@@ -77,7 +77,7 @@ namespace RapidSettings.Tests.Converters
         [TestMethod]
         public void NullableFrameworkStructsSettingsTest()
         {
-            var settingsFiller = this.GetSettingsFiller();
+            var settingsFiller = GetSettingsFiller();
 
             var settings = settingsFiller.CreateWithSettings<NullableFrameworkStructsSettings>();
 
@@ -150,7 +150,7 @@ namespace RapidSettings.Tests.Converters
             var settings = settingsFiller.CreateWithSettings<NonNumericFrameworkTypesSettings>();
 
             Assert.AreEqual(true, settings.SomeBoolean);
-            Assert.IsTrue(default(Guid) != settings.SomeGuid);
+            Assert.IsTrue(settings.SomeGuid != default(Guid));
             Assert.AreEqual("asdf", settings.SomeString);
             Assert.AreEqual(TimeSpan.Parse("12:13:14", CultureInfo.InvariantCulture), settings.SomeTimeSpan);
             Assert.AreEqual(DateTime.Parse("2000-01-01", CultureInfo.InvariantCulture), settings.SomeDateTime);
@@ -176,7 +176,7 @@ namespace RapidSettings.Tests.Converters
             Assert.ThrowsException<RapidSettingsException>(() => settingsFiller.CreateWithSettings<NonInvariantDoubleSettings>());
         }
 
-        private SettingsFiller GetSettingsFiller()
+        private static SettingsFiller GetSettingsFiller()
         {
             var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
             var rawSettingsProvider = new FromFuncProvider(key => key.ToString().Last().ToString());

@@ -5,6 +5,7 @@ using Moq;
 using RapidSettings.Core;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace RapidSettings.Tests.Providers
@@ -53,8 +54,8 @@ namespace RapidSettings.Tests.Providers
 
             for (var i = 0; i < listSectionChildrenMocks.Count; i++)
             {
-                listSectionChildrenMocks[i].SetupGet(x => x.Key).Returns(i.ToString());
-                listSectionChildrenMocks[i].SetupGet(x => x.Value).Returns((i * 2).ToString());
+                listSectionChildrenMocks[i].SetupGet(x => x.Key).Returns(i.ToString(CultureInfo.InvariantCulture));
+                listSectionChildrenMocks[i].SetupGet(x => x.Value).Returns((i * 2).ToString(CultureInfo.InvariantCulture));
             }
 
             var listSectionChildren = listSectionChildrenMocks.Select(x => x.Object).ToList();
@@ -89,7 +90,7 @@ namespace RapidSettings.Tests.Providers
             for (var i = 0; i < dictSectionChildrenMocks.Count; i++)
             {
                 dictSectionChildrenMocks[i].SetupGet(x => x.Key).Returns(dictKeys[i]);
-                dictSectionChildrenMocks[i].SetupGet(x => x.Value).Returns((i * 2).ToString());
+                dictSectionChildrenMocks[i].SetupGet(x => x.Value).Returns((i * 2).ToString(CultureInfo.InvariantCulture));
             }
 
             var dictSectionChildren = dictSectionChildrenMocks.Select(x => x.Object).ToList();

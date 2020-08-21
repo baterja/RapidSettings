@@ -12,21 +12,23 @@ namespace RapidSettings.Tests.Attributes
         {
             var settingConverterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
 
-            IConvertible strVal = settingConverterChooser.ChooseAndConvert<string, IConvertible>("123");
+            var strVal = settingConverterChooser.ChooseAndConvert<string, IConvertible>("123");
 
             Assert.AreEqual("123", strVal);
         }
 
         private class A { }
+
         private class B : A { }
+
         private class C : B { }
 
         private class SuperConverter : RawSettingsConverterBase
         {
             public SuperConverter()
             {
-                AddSupportForTypes(typeof(A), typeof(A), (rawValue, type) => rawValue);
-                AddSupportForTypes(typeof(C), typeof(C), (rawValue, type) => rawValue);
+                this.AddSupportForTypes(typeof(A), typeof(A), (rawValue, type) => rawValue);
+                this.AddSupportForTypes(typeof(C), typeof(C), (rawValue, type) => rawValue);
             }
         }
 
@@ -36,7 +38,7 @@ namespace RapidSettings.Tests.Attributes
             var settingConverterChooser = new SettingsConverterChooser(new[] { new SuperConverter() });
 
             var bInstance = new B();
-            A aInstance = settingConverterChooser.ChooseAndConvert<B, A>(bInstance);
+            var aInstance = settingConverterChooser.ChooseAndConvert<B, A>(bInstance);
 
             Assert.AreSame(bInstance, aInstance);
         }
@@ -47,7 +49,7 @@ namespace RapidSettings.Tests.Attributes
             var settingConverterChooser = new SettingsConverterChooser(new[] { new SuperConverter() });
 
             var cInstance = new C();
-            B bInstance = settingConverterChooser.ChooseAndConvert<C, B>(cInstance);
+            var bInstance = settingConverterChooser.ChooseAndConvert<C, B>(cInstance);
 
             Assert.AreSame(cInstance, bInstance);
         }
@@ -67,8 +69,8 @@ namespace RapidSettings.Tests.Attributes
             var settingConverterChooser = new SettingsConverterChooser(new IRawSettingsConverter[] { new SuperConverter(), new StringToFrameworkTypesConverter() });
 
             var bInstance = new B();
-            A aInstance = settingConverterChooser.ChooseAndConvert<B, A>(bInstance);
-            IConvertible strVal = settingConverterChooser.ChooseAndConvert<string, IConvertible>("123");
+            var aInstance = settingConverterChooser.ChooseAndConvert<B, A>(bInstance);
+            var strVal = settingConverterChooser.ChooseAndConvert<string, IConvertible>("123");
 
             Assert.AreSame(bInstance, aInstance);
             Assert.AreEqual("123", strVal);

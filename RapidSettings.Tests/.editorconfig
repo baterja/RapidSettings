@@ -16,7 +16,13 @@ dotnet_diagnostic.SA1201.severity = none
 csharp_style_unused_value_assignment_preference = discard_variable:none
 
 # S1481: Unused local variables should be removed
-dotnet_diagnostic.S1481.severity = suggestion
+dotnet_diagnostic.S1481.severity = none
 
 # SA1202: Elements should be ordered by access
 dotnet_diagnostic.SA1202.severity = none
+
+# CA1825: Avoid zero-length array allocations
+dotnet_diagnostic.CA1825.severity = none
+
+# Default severity for analyzer diagnostics with category 'StyleCop.CSharp.DocumentationRules'
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.DocumentationRules.severity = none

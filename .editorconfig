@@ -58,3 +58,6 @@ dotnet_diagnostic.S3343.severity = none
 
 # SA1208: System using directives should be placed before other using directives
 dotnet_diagnostic.SA1208.severity = none	
+
+# CA1305: Specify IFormatProvider
+dotnet_diagnostic.CA1305.severity = warning

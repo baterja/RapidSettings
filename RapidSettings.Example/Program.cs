@@ -3,9 +3,9 @@ using System;
 
 namespace RapidSettings.Example
 {
-    class Program
+    internal class Program
     {
-        static void Main()
+        private static void Main()
         {
             var settings = GetSettings();
 

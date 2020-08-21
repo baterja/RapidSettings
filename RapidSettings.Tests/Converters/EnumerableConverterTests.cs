@@ -3,6 +3,7 @@ using Moq;
 using RapidSettings.Core;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace RapidSettings.Tests.Converters
@@ -103,7 +104,7 @@ namespace RapidSettings.Tests.Converters
         public void CannotConvertToNonGenericIEnumerableTypes()
         {
             var converterChooserMock = new Mock<ISettingsConverterChooser>();
-            converterChooserMock.Setup(x => x.ChooseAndConvert<string, int>(It.IsAny<string>())).Returns<string>(str => int.Parse(str));
+            converterChooserMock.Setup(x => x.ChooseAndConvert<string, int>(It.IsAny<string>())).Returns<string>(str => int.Parse(str, CultureInfo.InvariantCulture));
             var converter = new EnumerableConverter(converterChooserMock.Object);
 
             var rawValue = new string[] { "1", "2" };
@@ -115,7 +116,7 @@ namespace RapidSettings.Tests.Converters
         public void ShouldCallConverterChooserWithValuesAndReturnCreatedList()
         {
             var converterChooserMock = new Mock<ISettingsConverterChooser>();
-            converterChooserMock.Setup(x => x.ChooseAndConvert<string, int>(It.IsAny<string>())).Returns<string>(str => int.Parse(str));
+            converterChooserMock.Setup(x => x.ChooseAndConvert<string, int>(It.IsAny<string>())).Returns<string>(str => int.Parse(str, CultureInfo.InvariantCulture));
             var converter = new EnumerableConverter(converterChooserMock.Object);
 
             var expectedList = new List<int> { 1, 2 };
@@ -132,7 +133,7 @@ namespace RapidSettings.Tests.Converters
         public void ShouldCallConverterChooserWithValuesAndReturnCreatedSet()
         {
             var converterChooserMock = new Mock<ISettingsConverterChooser>();
-            converterChooserMock.Setup(x => x.ChooseAndConvert<string, int>(It.IsAny<string>())).Returns<string>(str => int.Parse(str));
+            converterChooserMock.Setup(x => x.ChooseAndConvert<string, int>(It.IsAny<string>())).Returns<string>(str => int.Parse(str, CultureInfo.InvariantCulture));
             var converter = new EnumerableConverter(converterChooserMock.Object);
 
             var expectedList = new HashSet<int> { 1, 2 };
@@ -151,13 +152,14 @@ namespace RapidSettings.Tests.Converters
             var converterChooserMock = new Mock<ISettingsConverterChooser>();
             converterChooserMock
                 .Setup(x => x.ChooseAndConvert<KeyValuePair<string, string>, KeyValuePair<long, int>>(It.IsAny<KeyValuePair<string, string>>()))
-                .Returns<KeyValuePair<string, string>>(kvp => new KeyValuePair<long, int>(long.Parse(kvp.Key), int.Parse(kvp.Value)));
+                .Returns<KeyValuePair<string, string>>(kvp => new KeyValuePair<long, int>(long.Parse(kvp.Key, CultureInfo.InvariantCulture), int.Parse(kvp.Value, CultureInfo.InvariantCulture)));
             var converter = new EnumerableConverter(converterChooserMock.Object);
 
             var expectedDict = new Dictionary<long, int> { { 1, 1 }, { 2, 2 } };
-            var rawValue = new KeyValuePair<string, string>[] {
-                new KeyValuePair<string, string>( "1", "1" ),
-                new KeyValuePair<string, string>( "2", "2" ),
+            var rawValue = new KeyValuePair<string, string>[]
+            {
+                new KeyValuePair<string, string>("1", "1"),
+                new KeyValuePair<string, string>("2", "2"),
             };
 
             var convertedDict = converter.Convert<KeyValuePair<string, string>[], IReadOnlyDictionary<long, int>>(rawValue);

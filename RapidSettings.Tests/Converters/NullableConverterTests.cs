@@ -45,7 +45,7 @@ namespace RapidSettings.Tests.Converters
         {
             var converterChooserMock = new Mock<ISettingsConverterChooser>();
             var converter = new NullableConverter(converterChooserMock.Object);
-            var rawValue = new int?();
+            var rawValue = default(int?);
 
             converter.Convert<int?, double?>(rawValue);
 

@@ -22,7 +22,7 @@ namespace RapidSettings.Tests.Attributes
         [TestMethod]
         public void SanityTest()
         {
-            var settingsFiller = this.GetSettingsFiller();
+            var settingsFiller = GetSettingsFiller();
 
             var settings = settingsFiller.CreateWithSettings<TestSettings>();
 
@@ -34,7 +34,7 @@ namespace RapidSettings.Tests.Attributes
         [TestMethod]
         public void SanityTestWithDefaultCtor()
         {
-            var settingsFiller = this.GetSettingsFillerWithDefaultCtor();
+            var settingsFiller = GetSettingsFillerWithDefaultCtor();
 
             var settings = settingsFiller.CreateWithSettings<TestSettings>();
 
@@ -43,7 +43,7 @@ namespace RapidSettings.Tests.Attributes
             Assert.AreEqual(default(int), settings.SomeNonConvertibleSetting);
         }
 
-        private SettingsFiller GetSettingsFiller()
+        private static SettingsFiller GetSettingsFiller()
         {
             var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
             var rawSettingsProvider = new FromFuncProvider(key => key.ToString().Last().ToString());
@@ -52,7 +52,7 @@ namespace RapidSettings.Tests.Attributes
             return settingsFiller;
         }
 
-        private SettingsFiller GetSettingsFillerWithDefaultCtor()
+        private static SettingsFiller GetSettingsFillerWithDefaultCtor()
         {
             SettingsFillerStaticDefaults.DefaultDefaultRawSettingsProvider = new FromFuncProvider(key => key.ToString().Last().ToString());
             var settingsFiller = new SettingsFiller();

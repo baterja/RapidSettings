@@ -26,7 +26,7 @@ namespace RapidSettings.Tests.Attributes
         public void SettingsFillerTest_NoProvider()
         {
             var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
-            var settingsFiller = new SettingsFiller(converterChooser, (IRawSettingsProvider)null);
+            var settingsFiller = new SettingsFiller(converterChooser, null);
 
             foreach (var settingsProviderWithKey in SettingsFillerStaticDefaults.DefaultRawSettingsProviders)
             {
@@ -55,7 +55,7 @@ namespace RapidSettings.Tests.Attributes
         [TestMethod]
         public void SettingsFillerTest_Basic()
         {
-            var settingsFiller = this.GetBasicSettingsFiller();
+            var settingsFiller = GetBasicSettingsFiller();
 
             var settings = settingsFiller.CreateWithSettings<BasicSettings>();
 
@@ -74,7 +74,7 @@ namespace RapidSettings.Tests.Attributes
         [ExpectedException(typeof(RapidSettingsException))]
         public void SettingsFillerTest_NullResolutionOfRequired()
         {
-            var settingsFiller = this.GetBasicSettingsFiller();
+            var settingsFiller = GetBasicSettingsFiller();
 
             var settings = settingsFiller.CreateWithSettings<SettingsWithUnretrievableProp>();
         }
@@ -89,13 +89,12 @@ namespace RapidSettings.Tests.Attributes
         [ExpectedException(typeof(RapidSettingsException))]
         public void SettingsFillerTest_NoSetterForDecoratedProperty()
         {
-            var settingsFiller = this.GetBasicSettingsFiller();
+            var settingsFiller = GetBasicSettingsFiller();
 
             var settings = settingsFiller.CreateWithSettings<SettingsWithoutSetterOnProperty>();
         }
 
-
-        private SettingsFiller GetBasicSettingsFiller()
+        private static SettingsFiller GetBasicSettingsFiller()
         {
             var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
             var rawSettingsProvider = new FromFuncProvider(key => key.ToString().Last().ToString());
@@ -109,7 +108,7 @@ namespace RapidSettings.Tests.Attributes
         [TestMethod]
         public void SettingsFillerTest_Advanced()
         {
-            var settingsFiller = this.GetAdvancedSettingsFiller();
+            var settingsFiller = GetAdvancedSettingsFiller();
             Environment.SetEnvironmentVariable(nameof(AdvancedSettings.SomeInt), "1");
 
             var settings = settingsFiller.CreateWithSettings<AdvancedSettings>();
@@ -140,7 +139,9 @@ namespace RapidSettings.Tests.Attributes
         }
 
         private class A { }
+
         private class B : A { }
+
         private class C : B { }
 
         private class SuperConverter : RawSettingsConverterBase
@@ -152,7 +153,7 @@ namespace RapidSettings.Tests.Attributes
             }
         }
 
-        private SettingsFiller GetAdvancedSettingsFiller()
+        private static SettingsFiller GetAdvancedSettingsFiller()
         {
             var converterChooser = new SettingsConverterChooser(new IRawSettingsConverter[] { new StringToFrameworkTypesConverter(), new SuperConverter() });
             var funcSettingsProvider = new FromFuncProvider(key => new C());

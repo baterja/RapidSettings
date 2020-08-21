@@ -96,7 +96,7 @@ namespace RapidSettings.Core
             var rawSettingsProvider = this.ChooseRawSettingsProvider(requestedRawSettingsProviderName);
             var rawSetting = rawSettingsProvider.GetRawSetting(toFillAttribute.Key);
 
-            object settingValue = typeOfMemberToSet.IsValueType ? Activator.CreateInstance(typeOfMemberToSet) : null;
+            var settingValue = typeOfMemberToSet.IsValueType ? Activator.CreateInstance(typeOfMemberToSet) : null;
             var hasValueSpecified = rawSetting != null;
             if (!hasValueSpecified)
             {

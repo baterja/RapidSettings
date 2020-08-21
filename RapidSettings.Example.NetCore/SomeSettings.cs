@@ -3,7 +3,7 @@ using System;
 
 namespace RapidSettings.Example.NetCore
 {
-    class SomeSettings
+    internal class SomeSettings
     {
         // this setting will be retrieved by key Host (default) with default provider
         // and if its retrieval or conversion will be impossible, exception will be thrown

@@ -4,9 +4,9 @@ using System;
 
 namespace RapidSettings.Example.NetCore
 {
-    class Program
+    internal class Program
     {
-        static void Main()
+        private static void Main()
         {
             var settings = GetSettings();
 
@@ -27,7 +27,10 @@ namespace RapidSettings.Example.NetCore
                 .AddJsonFile("appsettings.json")
                 .Build();
 
-            var settingsFiller = new SettingsFiller(defaultRawSettingsProvider: new FromIConfigurationProvider(configuration));
+            var settingsFiller = new SettingsFiller(
+                settingsConverterChooser: SettingsFillerStaticDefaults.DefaultSettingsConverterChooser,
+                rawSettingsProvidersByNames: SettingsFillerStaticDefaults.DefaultRawSettingsProviders, 
+                defaultRawSettingsProvider: new FromIConfigurationProvider(configuration));
 
             return settingsFiller.CreateWithSettings<SomeSettings>();
         }

@@ -1,5 +1,4 @@
-﻿using RapidSettings.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -49,7 +48,7 @@ namespace RapidSettings.Core
         /// Uses <see cref="ConvertingFuncs"/> to convert given object from type <typeparamref name="TFrom"/> to type <typeparamref name="TTo"/>.
         /// </summary>
         /// <typeparam name="TFrom">Type from which <paramref name="rawValue"/> should be converted.</typeparam>
-        /// <typeparam name="TTo">Type on which <paramref name="rawValue"/> should be converted.</typeparam>
+        /// <typeparam name="TTo">Type to which <paramref name="rawValue"/> should be converted.</typeparam>
         /// <param name="rawValue">Value (possibly) convertible to <typeparamref name="TTo"/>.</param>
         /// <returns><typeparamref name="TTo"/> converted from <paramref name="rawValue"/> or exception if it was impossible.</returns>
         public virtual TTo Convert<TFrom, TTo>(TFrom rawValue)

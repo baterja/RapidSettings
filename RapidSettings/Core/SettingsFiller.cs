@@ -71,23 +71,16 @@ namespace RapidSettings.Core
             }
         }
 
-        // TODO split
         private object ResolveSetting(PropertyInfo propToFill)
         {
             var typeOfMemberToSet = propToFill.PropertyType;
 
-            #region Nullable support
-            var underlayingTypeOfNullable = Nullable.GetUnderlyingType(typeOfMemberToSet);
-            var unwrappedTypeOfPropToSet = underlayingTypeOfNullable ?? typeOfMemberToSet;
-            #endregion
-
-            #region Resolution
             var toFillAttribute = propToFill.GetCustomAttribute<ToFillAttribute>();
             var requestedRawSettingsProviderName = toFillAttribute.RawSettingsProviderName;
             var rawSettingsProvider = this.ChooseRawSettingsProvider(requestedRawSettingsProviderName);
             var rawSetting = rawSettingsProvider.GetRawSetting(toFillAttribute.Key);
 
-            object settingValue = typeOfMemberToSet.IsValueType && underlayingTypeOfNullable == null ? Activator.CreateInstance(typeOfMemberToSet) : null;
+            object settingValue = typeOfMemberToSet.IsValueType ? Activator.CreateInstance(typeOfMemberToSet) : null;
             var hasValueSpecified = rawSetting != null;
             if (!hasValueSpecified)
             {
@@ -98,18 +91,10 @@ namespace RapidSettings.Core
 
                 return settingValue;
             }
-            #endregion
-
-            #region Conversion
-
-            // TODO make conversion optional (basing on some setting) when rawSetting's type is assignable to typeOfMemberToSet
-
-            var convertMethod = typeof(ISettingsConverterChooser).GetMethod(nameof(ISettingsConverterChooser.ChooseAndConvert));
-            var convertGenericMethod = convertMethod.MakeGenericMethod(rawSetting.GetType(), unwrappedTypeOfPropToSet);
 
             try
             {
-                settingValue = convertGenericMethod.Invoke(this.SettingsConverterChooser, new[] { rawSetting });
+                settingValue = this.Convert(rawSetting, typeOfMemberToSet);
             }
             catch (Exception e)
             {
@@ -118,9 +103,16 @@ namespace RapidSettings.Core
                     throw new RapidSettingsException($"Conversion of required setting {propToFill.Name} failed!", e);
                 }
             }
-            #endregion
 
             return settingValue;
+        }
+
+        private object Convert(object rawValue, Type targetType)
+        {
+            var convertMethod = typeof(ISettingsConverterChooser).GetMethod(nameof(ISettingsConverterChooser.ChooseAndConvert));
+            var convertGenericMethod = convertMethod.MakeGenericMethod(rawValue.GetType(), targetType);
+
+            return convertGenericMethod.Invoke(this.SettingsConverterChooser, new[] { rawValue });
         }
 
         private IRawSettingsProvider ChooseRawSettingsProvider(string requestedRawSettingsProviderName)

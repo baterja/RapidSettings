@@ -1,4 +1,4 @@
-﻿#if !NETCOREAPP2_0 // NET Core AppSettings incorrectly gets config file in tests
+﻿#if !NETCOREAPP3_1 // NET Core AppSettings incorrectly gets config file in tests
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RapidSettings.Core;
 

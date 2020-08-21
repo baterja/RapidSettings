@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace RapidSettings.Core
@@ -33,6 +34,7 @@ namespace RapidSettings.Core
         /// </summary>
         /// <remarks>
         /// If resolution or conversion of required member fails, exception will be raised. Default value of expected type will be assigned for non-required member.
+        /// For an <see cref="IEnumerable{T}"/> property, all its elements will also be required if the collection itself is required.
         /// </remarks>
         public bool IsRequired { get; }
 

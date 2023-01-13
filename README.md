@@ -1,5 +1,5 @@
 # RapidSettings [![Build status](https://ci.appveyor.com/api/projects/status/1r2o5w4tsg11fatf/branch/master?svg=true)](https://ci.appveyor.com/project/baterja/rapidsettings/branch/master) [![NuGet](https://img.shields.io/nuget/vpre/RapidSettings.svg)](https://www.nuget.org/packages/RapidSettings/)
-Simple and extensible way to make web.config/app.config/env vars/whatever easier to read and strongly typed!
+Simple and extensible way to make appsettings.json/web.config/app.config/env vars/whatever easier to read and strongly typed!
 
 # Table of contents
 1. [Purpose](#Purpose)
@@ -39,9 +39,9 @@ This project exists to make it easier, reusable and more flexible.
 <a name="Quickstart"></a>
 # Quickstart
 
-Example projects are RapidSettings.Example (net45) and RapidSettings.Example.NetCore (netcoreapp3.1).
+Example projects are RapidSettings.Example (net48) and RapidSettings.Example.NetCore (netcoreapp3.1).
 
-## .Net Framework 4.x
+## .Net Framework 4.8
 The example shows basic scenario - there are some settings in app.config and another one as an environment variable that should be retrieved and converted to some class properties.
 
 Assuming that you have a section in app.config:

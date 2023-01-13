@@ -7,7 +7,7 @@ namespace RapidSettings.Tests.Providers
     public class FromFuncProviderTests
     {
         [TestMethod]
-        public void FromFuncProviderTest_SimpleRetrieval()
+        public void SimpleRetrieval()
         {
             var fromFuncProvider = new FromFuncProvider(key => key == "ExistingKey" ? "ExistingKeyValue" : null);
 
@@ -17,7 +17,7 @@ namespace RapidSettings.Tests.Providers
         }
 
         [TestMethod]
-        public void FromFuncProviderTest_NonExistingRetrieval()
+        public void NonExistingRetrieval()
         {
             var fromFuncProvider = new FromFuncProvider(key => key == "ExistingKey" ? "ExistingKeyValue" : null);
 
@@ -28,7 +28,7 @@ namespace RapidSettings.Tests.Providers
 
         [TestMethod]
         [ExpectedException(typeof(RapidSettingsException), AllowDerivedTypes = true)]
-        public void FromFuncProviderTest_NullRetrieval()
+        public void NullRetrieval()
         {
             var fromFuncProvider = new FromFuncProvider(key => key == "ExistingKey" ? "ExistingKeyValue" : null);
 

@@ -1,5 +1,4 @@
-﻿#if !NETCOREAPP3_1 // NET Core AppSettings incorrectly gets config file in tests
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RapidSettings.Core;
 
 namespace RapidSettings.Tests.Providers
@@ -8,7 +7,7 @@ namespace RapidSettings.Tests.Providers
     public class FromAppSettingsProviderTests
     {
         [TestMethod]
-        public void FromAppSettingsProviderTest_SimpleRetrieval()
+        public void SimpleRetrieval()
         {
             var fromAppSettingsProvider = new FromAppSettingsProvider();
 
@@ -18,7 +17,7 @@ namespace RapidSettings.Tests.Providers
         }
 
         [TestMethod]
-        public void FromAppSettingsProviderTest_NonExistingRetrieval()
+        public void NonExistingRetrieval()
         {
             var fromAppSettingsProvider = new FromAppSettingsProvider();
 
@@ -29,12 +28,11 @@ namespace RapidSettings.Tests.Providers
 
         [TestMethod]
         [ExpectedException(typeof(RapidSettingsException), AllowDerivedTypes = true)]
-        public void FromAppSettingsProviderTest_NullRetrieval()
+        public void NullRetrieval()
         {
             var fromAppSettingsProvider = new FromAppSettingsProvider();
 
-            var nullKeyValue = fromAppSettingsProvider.GetRawSetting(null);
+            _ = fromAppSettingsProvider.GetRawSetting(null);
         }
     }
 }
-#endif

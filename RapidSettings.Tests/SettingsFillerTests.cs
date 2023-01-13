@@ -23,7 +23,7 @@ namespace RapidSettings.Tests.Attributes
         }
 
         [TestMethod]
-        public void SettingsFillerTest_NoProvider()
+        public void NoProvider()
         {
             var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
             var settingsFiller = new SettingsFiller(converterChooser, null);
@@ -37,14 +37,14 @@ namespace RapidSettings.Tests.Attributes
 
         [TestMethod]
         [ExpectedException(typeof(RapidSettingsException))]
-        public void SettingsFillerTest_NoProviders()
+        public void NoProviders()
         {
             var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
-            var settingsFiller = new SettingsFiller(converterChooser, (IDictionary<string, IRawSettingsProvider>)null);
+            _ = new SettingsFiller(converterChooser, (IDictionary<string, IRawSettingsProvider>)null);
         }
 
         [TestMethod]
-        public void SettingsFillerTest_NoChooser()
+        public void NoChooser()
         {
             var rawSettingsProvider = new FromFuncProvider(key => key.ToString().Last().ToString());
             var settingsFiller = new SettingsFiller(null, rawSettingsProvider);
@@ -53,7 +53,7 @@ namespace RapidSettings.Tests.Attributes
         }
 
         [TestMethod]
-        public void SettingsFillerTest_Basic()
+        public void Basic()
         {
             var settingsFiller = GetBasicSettingsFiller();
 
@@ -72,11 +72,11 @@ namespace RapidSettings.Tests.Attributes
 
         [TestMethod]
         [ExpectedException(typeof(RapidSettingsException))]
-        public void SettingsFillerTest_NullResolutionOfRequired()
+        public void NullResolutionOfRequired()
         {
             var settingsFiller = GetBasicSettingsFiller();
 
-            var settings = settingsFiller.CreateWithSettings<SettingsWithUnretrievableProp>();
+            _ = settingsFiller.CreateWithSettings<SettingsWithUnretrievableProp>();
         }
 
         private class SettingsWithoutSetterOnProperty
@@ -87,11 +87,11 @@ namespace RapidSettings.Tests.Attributes
 
         [TestMethod]
         [ExpectedException(typeof(RapidSettingsException))]
-        public void SettingsFillerTest_NoSetterForDecoratedProperty()
+        public void NoSetterForDecoratedProperty()
         {
             var settingsFiller = GetBasicSettingsFiller();
 
-            var settings = settingsFiller.CreateWithSettings<SettingsWithoutSetterOnProperty>();
+            _ = settingsFiller.CreateWithSettings<SettingsWithoutSetterOnProperty>();
         }
 
         private static SettingsFiller GetBasicSettingsFiller()
@@ -106,7 +106,7 @@ namespace RapidSettings.Tests.Attributes
 
         #region Advanced scenarios
         [TestMethod]
-        public void SettingsFillerTest_Advanced()
+        public void Advanced()
         {
             var settingsFiller = GetAdvancedSettingsFiller();
             Environment.SetEnvironmentVariable(nameof(AdvancedSettings.SomeInt), "1");

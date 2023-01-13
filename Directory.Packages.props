@@ -1,0 +1,21 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="3.1.7" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="3.1.7" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.7" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.0.0" />
+    <PackageVersion Include="Moq" Version="4.14.5" />
+    <PackageVersion Include="MSTest.TestAdapter" Version="2.1.2" />
+    <PackageVersion Include="MSTest.TestFramework" Version="2.1.2" />
+    <PackageVersion Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
+
+    <!-- TODO -->
+    <PackageVersion Include="Roslynator.Analyzers" Version="2.3.0" />
+    <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118" />
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="8.51.0.59060" />
+  </ItemGroup>
+</Project>

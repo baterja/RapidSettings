@@ -8,7 +8,7 @@ namespace RapidSettings.Tests.Attributes
     public class SettingConverterChooserTests
     {
         [TestMethod]
-        public void SettingConverterChooserTest_StringToItsInterface()
+        public void StringToItsInterface()
         {
             var settingConverterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
 
@@ -33,7 +33,7 @@ namespace RapidSettings.Tests.Attributes
         }
 
         [TestMethod]
-        public void SettingConverterChooserTest_TFromCovariance()
+        public void TFromCovariance()
         {
             var settingConverterChooser = new SettingsConverterChooser(new[] { new SuperConverter() });
 
@@ -44,7 +44,7 @@ namespace RapidSettings.Tests.Attributes
         }
 
         [TestMethod]
-        public void SettingConverterChooserTest_TToCovariance()
+        public void TToCovariance()
         {
             var settingConverterChooser = new SettingsConverterChooser(new[] { new SuperConverter() });
 
@@ -56,7 +56,7 @@ namespace RapidSettings.Tests.Attributes
 
         [TestMethod]
         [ExpectedException(typeof(RapidSettingsException))]
-        public void SettingConverterChooserTest_NoSuitableConverter()
+        public void NoSuitableConverter()
         {
             var settingConverterChooser = new SettingsConverterChooser(new[] { new SuperConverter() });
 
@@ -64,7 +64,7 @@ namespace RapidSettings.Tests.Attributes
         }
 
         [TestMethod]
-        public void SettingConverterChooserTest_ChooseProperConverter()
+        public void ChooseProperConverter()
         {
             var settingConverterChooser = new SettingsConverterChooser(new IRawSettingsConverter[] { new SuperConverter(), new StringToFrameworkTypesConverter() });
 

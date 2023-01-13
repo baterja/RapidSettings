@@ -8,7 +8,7 @@ namespace RapidSettings.Tests.Providers
     public class FromEnvironmentProviderTests
     {
         [TestMethod]
-        public void FromEnvironmentProviderTest_SimpleRetrieval()
+        public void SimpleRetrieval()
         {
             var fromEnvironmentProvider = new FromEnvironmentProvider();
             Environment.SetEnvironmentVariable("ExistingKey", "ExistingKeyValue");
@@ -19,7 +19,7 @@ namespace RapidSettings.Tests.Providers
         }
 
         [TestMethod]
-        public void FromEnvironmentProviderTest_NonExistingRetrieval()
+        public void NonExistingRetrieval()
         {
             var fromEnvironmentProvider = new FromEnvironmentProvider();
             Environment.SetEnvironmentVariable("ExistingKey", "ExistingKeyValue");
@@ -31,12 +31,12 @@ namespace RapidSettings.Tests.Providers
 
         [TestMethod]
         [ExpectedException(typeof(RapidSettingsException), AllowDerivedTypes = true)]
-        public void FromEnvironmentProviderTest_NullRetrieval()
+        public void NullRetrieval()
         {
             var fromEnvironmentProvider = new FromEnvironmentProvider();
             Environment.SetEnvironmentVariable("ExistingKey", "ExistingKeyValue");
 
-            var nullKeyValue = fromEnvironmentProvider.GetRawSetting(null);
+            _ = fromEnvironmentProvider.GetRawSetting(null);
         }
     }
 }

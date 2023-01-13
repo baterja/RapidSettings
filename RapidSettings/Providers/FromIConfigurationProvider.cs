@@ -1,5 +1,4 @@
-﻿#if NETSTANDARD2_0 || NET47
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -108,4 +107,3 @@ namespace RapidSettings.Core
         }
     }
 }
-#endif

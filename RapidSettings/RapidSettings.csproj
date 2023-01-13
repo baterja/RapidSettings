@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net45;net47</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <NeutralLanguage>en</NeutralLanguage>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\RapidSettings.xml</DocumentationFile>
@@ -17,44 +17,15 @@
     <PackageTags>app.config;web.config;appsettings;settings;configuration;env;ConfigurationManager;IConfiguration</PackageTags>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>Unlicense</PackageLicenseExpression>
-    <Description>Simple and extensible way to make web.config/app.config/env vars/whatever easier to read and strongly typed!</Description>
+    <Description>Simple and extensible way to make appsettings.json/web.config/app.config/env vars/whatever easier to read and strongly typed!</Description>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.7" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)'=='net45'">
-    <Reference Include="System.Configuration" />
-    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)'=='net47'">
-    <Reference Include="System.Configuration" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.7" />
-  </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Roslynator.Analyzers" Version="2.3.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.11.0.20529">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="System.Configuration.ConfigurationManager" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>

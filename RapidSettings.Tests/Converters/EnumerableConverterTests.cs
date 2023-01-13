@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using RapidSettings.Core;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
@@ -165,7 +166,7 @@ namespace RapidSettings.Tests.Converters
             var convertedDict = converter.Convert<KeyValuePair<string, string>[], IReadOnlyDictionary<long, int>>(rawValue);
 
             converterChooserMock.Verify(x => x.ChooseAndConvert<KeyValuePair<string, string>, KeyValuePair<long, int>>(It.IsAny<KeyValuePair<string, string>>()), Times.Exactly(2));
-            CollectionAssert.AreEqual(new KeyValuePair<long, int>[0], expectedDict.Except(convertedDict).ToList());
+            CollectionAssert.AreEqual(Array.Empty<KeyValuePair<long, int>>(), expectedDict.Except(convertedDict).ToList());
         }
     }
 }

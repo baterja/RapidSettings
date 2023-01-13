@@ -150,7 +150,7 @@ namespace RapidSettings.Tests.Converters
             var settings = settingsFiller.CreateWithSettings<NonNumericFrameworkTypesSettings>();
 
             Assert.AreEqual(true, settings.SomeBoolean);
-            Assert.IsTrue(settings.SomeGuid != default(Guid));
+            Assert.IsTrue(settings.SomeGuid != Guid.Empty);
             Assert.AreEqual("asdf", settings.SomeString);
             Assert.AreEqual(TimeSpan.Parse("12:13:14", CultureInfo.InvariantCulture), settings.SomeTimeSpan);
             Assert.AreEqual(DateTime.Parse("2000-01-01", CultureInfo.InvariantCulture), settings.SomeDateTime);

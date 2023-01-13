@@ -4,7 +4,7 @@ using System;
 
 namespace RapidSettings.Example.NetCore
 {
-    internal class Program
+    internal static class Program
     {
         private static void Main()
         {
@@ -29,7 +29,7 @@ namespace RapidSettings.Example.NetCore
 
             var settingsFiller = new SettingsFiller(
                 settingsConverterChooser: SettingsFillerStaticDefaults.DefaultSettingsConverterChooser,
-                rawSettingsProvidersByNames: SettingsFillerStaticDefaults.DefaultRawSettingsProviders, 
+                rawSettingsProvidersByNames: SettingsFillerStaticDefaults.DefaultRawSettingsProviders,
                 defaultRawSettingsProvider: new FromIConfigurationProvider(configuration));
 
             return settingsFiller.CreateWithSettings<SomeSettings>();

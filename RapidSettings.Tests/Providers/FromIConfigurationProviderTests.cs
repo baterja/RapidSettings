@@ -1,5 +1,4 @@
-﻿#if NETCOREAPP3_1 || NET47
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using RapidSettings.Core;
@@ -120,4 +119,3 @@ namespace RapidSettings.Tests.Providers
         }
     }
 }
-#endif

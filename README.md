@@ -39,7 +39,7 @@ This project exists to make it easier, reusable and more flexible.
 <a name="Quickstart"></a>
 # Quickstart
 
-Example projects are RapidSettings.Example (net48) and RapidSettings.Example.NetCore (netcoreapp3.1).
+Example projects are RapidSettings.Example (net48) and RapidSettings.Example.NetCore (net7.0).
 
 ## .Net Framework 4.8
 The example shows basic scenario - there are some settings in app.config and another one as an environment variable that should be retrieved and converted to some class properties.

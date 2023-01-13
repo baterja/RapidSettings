@@ -1,5 +1,4 @@
-﻿#if NETCOREAPP3_1
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RapidSettings.Core;
 using System.Collections.Generic;
@@ -83,4 +82,3 @@ namespace RapidSettings.Tests
         }
     }
 }
-#endif

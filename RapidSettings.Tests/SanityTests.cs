@@ -46,7 +46,7 @@ namespace RapidSettings.Tests.Attributes
         private static SettingsFiller GetSettingsFiller()
         {
             var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
-            var rawSettingsProvider = new FromFuncProvider(key => key.ToString().Last().ToString());
+            var rawSettingsProvider = new FromFuncProvider(key => key.Last().ToString());
             var settingsFiller = new SettingsFiller(converterChooser, rawSettingsProvider);
 
             return settingsFiller;
@@ -54,7 +54,7 @@ namespace RapidSettings.Tests.Attributes
 
         private static SettingsFiller GetSettingsFillerWithDefaultCtor()
         {
-            SettingsFillerStaticDefaults.DefaultDefaultRawSettingsProvider = new FromFuncProvider(key => key.ToString().Last().ToString());
+            SettingsFillerStaticDefaults.DefaultDefaultRawSettingsProvider = new FromFuncProvider(key => key.Last().ToString());
             var settingsFiller = new SettingsFiller();
 
             return settingsFiller;

@@ -60,12 +60,14 @@ namespace RapidSettings.Core
         /// </summary>
         public void FillSettings<T>(T objectToFill)
         {
-            var propertiesToFill = GetPropertiesToFill(typeof(T));
-            foreach (var propToFill in propertiesToFill)
+            var attributesByProperties = GetAttributesByProperties(typeof(T));
+            foreach (var attributeAndProperty in attributesByProperties)
             {
+                var toFillAttribute = attributeAndProperty.Value;
+                var propToFill = attributeAndProperty.Key;
                 ValidateIfPropertyIsFillable(propToFill);
 
-                var setting = this.ResolveSetting(propToFill);
+                var setting = this.ResolveSetting(propToFill, toFillAttribute);
                 propToFill.SetValue(objectToFill, setting);
             }
         }
@@ -78,20 +80,37 @@ namespace RapidSettings.Core
             }
         }
 
-        private static IEnumerable<PropertyInfo> GetPropertiesToFill(Type typeOfObjectToFill)
+        private static IReadOnlyDictionary<PropertyInfo, ToFillAttribute> GetAttributesByProperties(Type typeOfObjectToFill)
         {
-            var propertiesToFill = typeOfObjectToFill
-                .GetProperties()
-                .Where(prop => prop.IsDefined(typeof(ToFillAttribute), true));
+            var classToFillAttribute = typeOfObjectToFill.GetCustomAttribute<ClassToFillAttribute>();
+            var classLevelToFillAttibutesByPropertyInfos = new Dictionary<PropertyInfo, ToFillAttribute>();
+            if (classToFillAttribute != null)
+            {
+                classLevelToFillAttibutesByPropertyInfos = typeOfObjectToFill
+                    .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                    .Where(prop => !prop.IsDefined(typeof(ToFillAttribute)))
+                    .ToDictionary(
+                        prop => prop,
+                        prop => new ToFillAttribute(
+                            classToFillAttribute.KeyPrefix + prop.Name,
+                            classToFillAttribute.AllRequired,
+                            classToFillAttribute.RawSettingsProviderName));
+            }
 
-            return propertiesToFill;
+            var propLevelToFillAttributesByPropertyInfos = typeOfObjectToFill
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(prop => prop.IsDefined(typeof(ToFillAttribute)))
+                .ToDictionary(prop => prop, prop => prop.GetCustomAttribute<ToFillAttribute>());
+
+            return classLevelToFillAttibutesByPropertyInfos
+                .Concat(propLevelToFillAttributesByPropertyInfos)
+                .ToDictionary(x => x.Key, x => x.Value);
         }
 
-        private object ResolveSetting(PropertyInfo propToFill)
+        private object ResolveSetting(PropertyInfo propToFill, ToFillAttribute toFillAttribute)
         {
             var typeOfMemberToSet = propToFill.PropertyType;
 
-            var toFillAttribute = propToFill.GetCustomAttribute<ToFillAttribute>();
             var requestedRawSettingsProviderName = toFillAttribute.RawSettingsProviderName;
             var rawSettingsProvider = this.ChooseRawSettingsProvider(requestedRawSettingsProviderName);
             var rawSetting = rawSettingsProvider.GetRawSetting(toFillAttribute.Key);

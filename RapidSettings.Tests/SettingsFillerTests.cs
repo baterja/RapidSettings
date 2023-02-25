@@ -46,7 +46,7 @@ namespace RapidSettings.Tests.Attributes
         [TestMethod]
         public void NoChooser()
         {
-            var rawSettingsProvider = new FromFuncProvider(key => key.ToString().Last().ToString());
+            var rawSettingsProvider = new FromFuncProvider(key => key.Last().ToString());
             var settingsFiller = new SettingsFiller(null, rawSettingsProvider);
 
             Assert.AreEqual(SettingsFillerStaticDefaults.DefaultSettingsConverterChooser, settingsFiller.SettingsConverterChooser);
@@ -97,7 +97,7 @@ namespace RapidSettings.Tests.Attributes
         private static SettingsFiller GetBasicSettingsFiller()
         {
             var converterChooser = new SettingsConverterChooser(new[] { new StringToFrameworkTypesConverter() });
-            var rawSettingsProvider = new FromFuncProvider(key => key.ToString().Last().ToString());
+            var rawSettingsProvider = new FromFuncProvider(key => key.Last().ToString());
             var settingsFiller = new SettingsFiller(converterChooser, rawSettingsProvider);
 
             return settingsFiller;

@@ -57,7 +57,7 @@ namespace RapidSettings.Tests.Providers
                 listSectionChildrenMocks[i].SetupGet(x => x.Value).Returns((i * 2).ToString(CultureInfo.InvariantCulture));
             }
 
-            var listSectionChildren = listSectionChildrenMocks.Select(x => x.Object).ToList();
+            var listSectionChildren = listSectionChildrenMocks.ConvertAll(x => x.Object);
             var listSectionMock = new Mock<IConfigurationSection>();
             listSectionMock.Setup(x => x.GetChildren()).Returns(listSectionChildren);
 
@@ -92,7 +92,7 @@ namespace RapidSettings.Tests.Providers
                 dictSectionChildrenMocks[i].SetupGet(x => x.Value).Returns((i * 2).ToString(CultureInfo.InvariantCulture));
             }
 
-            var dictSectionChildren = dictSectionChildrenMocks.Select(x => x.Object).ToList();
+            var dictSectionChildren = dictSectionChildrenMocks.ConvertAll(x => x.Object);
             var dictSectionMock = new Mock<IConfigurationSection>();
             dictSectionMock.Setup(x => x.GetChildren()).Returns(dictSectionChildren);
 

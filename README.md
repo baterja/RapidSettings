@@ -39,7 +39,7 @@ This project exists to make it easier, reusable and more flexible.
 <a name="Quickstart"></a>
 # Quickstart
 
-Example projects are RapidSettings.Example (net48) and RapidSettings.Example.NetCore (net7.0).
+Example projects are RapidSettings.Example (net48) and RapidSettings.Example.NetCore (net8.0).
 
 ## .Net Framework 4.8
 The example shows basic scenario - there are some settings in app.config and another one as an environment variable that should be retrieved and converted to some class properties.
@@ -85,7 +85,7 @@ var settingsFiller = new SettingsFiller();
 var settings = settingsFiller.CreateWithSettings<SomeSettings>();
 ```
 
-## .Net Core 3.x (should also work for 1.x and 2.x with minor changes)
+## .Net >4 & .Net Core 3.x (should also work for 1.x and 2.x with minor changes)
 The example shows basic scenario - there are some settings in appsettings.json and another one as an environment variable that should be retrieved and converted to some class properties.
 
 Assuming that you have appsettings.json:
